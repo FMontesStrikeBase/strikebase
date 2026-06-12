@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Plantilla de Hábitos de Productividad · STRIKEBASE</title>
+<meta name="description" content="Plantilla profesional en Excel para trackear tus hábitos de productividad. Dashboard semanal, registro mensual, estadísticas y más. Diseñada por STRIKEBASE."/>
+<meta name="keywords" content="plantilla hábitos productividad, tracker hábitos excel, hábitos de productividad, sistema de hábitos, planificador hábitos"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --ink:#1A1A12;--paper:#F2EDE0;--paper-dim:#E5DFC8;
+  --accent:#D4541A;--accent-dim:#A83C10;
+  --sand:#C8C09A;--sand-dim:#A09870;
+  --white:#FAFAF5;--muted:#8A8570;
+  --success:#4A6B2C;
+}
+html{scroll-behavior:smooth;}
+body{background:var(--paper);color:var(--ink);font-family:'DM Sans',sans-serif;overflow-x:hidden;}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:var(--ink);padding:.9rem 2rem;display:flex;align-items:center;justify-content:space-between;}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--white);text-decoration:none;}
+.nav-logo span{color:var(--accent);}
+.nav-cta{background:var(--accent);color:var(--white);border:none;padding:8px 20px;border-radius:4px;font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.1em;cursor:pointer;text-decoration:none;transition:background .2s;}
+.nav-cta:hover{background:var(--accent-dim);}
+
+/* ── HERO ── */
+.hero{min-height:100vh;background:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6rem 2rem 4rem;text-align:center;position:relative;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(200,192,154,0.04) 39px,rgba(200,192,154,0.04) 40px),repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(200,192,154,0.04) 39px,rgba(200,192,154,0.04) 40px);}
+.hero-tag{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.25em;color:var(--accent);margin-bottom:1.5rem;text-transform:uppercase;opacity:0;animation:fadeUp .6s .2s forwards;}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(56px,10vw,110px);letter-spacing:2px;color:var(--white);line-height:.95;margin-bottom:1.5rem;opacity:0;animation:fadeUp .6s .35s forwards;}
+.hero-title span{color:var(--accent);}
+.hero-sub{font-size:clamp(14px,2vw,17px);color:var(--sand-dim);line-height:1.7;max-width:520px;margin:0 auto 2.5rem;font-weight:300;opacity:0;animation:fadeUp .6s .5s forwards;}
+.hero-price-wrap{display:flex;align-items:center;gap:16px;justify-content:center;margin-bottom:2rem;opacity:0;animation:fadeUp .6s .65s forwards;}
+.hero-price{font-family:'Bebas Neue',sans-serif;font-size:56px;color:var(--white);letter-spacing:1px;}
+.hero-price-old{font-size:18px;color:var(--muted);text-decoration:line-through;font-weight:300;}
+.hero-price-badge{background:var(--accent);color:var(--white);font-family:'DM Mono',monospace;font-size:10px;padding:4px 10px;border-radius:3px;letter-spacing:.08em;}
+.hero-btn{display:inline-block;background:var(--accent);color:var(--white);padding:16px 40px;border-radius:4px;font-family:'DM Mono',monospace;font-size:12px;font-weight:500;letter-spacing:.15em;text-decoration:none;transition:all .2s;opacity:0;animation:fadeUp .6s .8s forwards;border:none;cursor:pointer;}
+.hero-btn:hover{background:var(--accent-dim);transform:translateY(-2px);}
+.hero-note{font-size:12px;color:var(--muted);margin-top:12px;opacity:0;animation:fadeUp .6s .95s forwards;font-family:'DM Mono',monospace;letter-spacing:.05em;}
+.hero-preview{margin-top:4rem;width:100%;max-width:800px;border-radius:8px;overflow:hidden;border:0.5px solid rgba(200,192,154,0.15);opacity:0;animation:fadeUp .8s 1.1s forwards;}
+.preview-bar{background:rgba(255,255,255,0.05);padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:0.5px solid rgba(200,192,154,0.1);}
+.preview-dot{width:10px;height:10px;border-radius:50%;}
+.preview-screen{background:#1E1E14;padding:1.5rem;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.preview-kpi{background:rgba(255,255,255,0.04);border:0.5px solid rgba(200,192,154,0.1);border-radius:6px;padding:14px 10px;text-align:center;}
+.preview-kpi-val{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--accent);}
+.preview-kpi-lbl{font-family:'DM Mono',monospace;font-size:8px;color:var(--sand-dim);letter-spacing:.1em;margin-top:3px;}
+.preview-habits{grid-column:1/-1;display:flex;flex-direction:column;gap:6px;}
+.preview-row{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.03);border-radius:4px;padding:8px 12px;}
+.preview-check{width:14px;height:14px;border-radius:2px;flex-shrink:0;}
+.preview-check.done{background:var(--success);}
+.preview-check.empty{border:1px solid rgba(200,192,154,0.2);}
+.preview-habit-name{font-size:11px;color:var(--sand-dim);flex:1;}
+.preview-days{display:flex;gap:4px;}
+.preview-cell{width:14px;height:14px;border-radius:2px;background:rgba(255,255,255,0.05);}
+.preview-cell.on{background:var(--success);}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── FEATURES ── */
+.features{padding:6rem 2rem;background:var(--paper);}
+.section-tag{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.25em;color:var(--accent);text-align:center;margin-bottom:1rem;}
+.section-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,6vw,64px);text-align:center;color:var(--ink);line-height:1;margin-bottom:4rem;letter-spacing:1px;}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.5rem;max-width:900px;margin:0 auto;}
+.feat-card{background:var(--white);border:0.5px solid var(--paper-dim);border-radius:8px;padding:1.75rem;transition:transform .2s,border-color .2s;}
+.feat-card:hover{transform:translateY(-4px);border-color:var(--sand);}
+.feat-icon{font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:.15em;margin-bottom:1rem;display:inline-block;border:0.5px solid rgba(212,84,26,0.3);padding:4px 10px;border-radius:3px;}
+.feat-title{font-size:15px;font-weight:600;color:var(--ink);margin-bottom:8px;line-height:1.3;}
+.feat-desc{font-size:13px;color:var(--muted);line-height:1.7;font-weight:300;}
+
+/* ── SHEETS ── */
+.sheets{padding:6rem 2rem;background:var(--ink);}
+.sheets .section-title{color:var(--white);}
+.sheets-list{max-width:700px;margin:0 auto;display:flex;flex-direction:column;gap:1px;}
+.sheet-item{display:flex;align-items:flex-start;gap:20px;padding:1.25rem 1.5rem;background:rgba(255,255,255,0.03);border:0.5px solid rgba(200,192,154,0.08);transition:background .2s;}
+.sheet-item:hover{background:rgba(255,255,255,0.06);}
+.sheet-item:first-child{border-radius:8px 8px 0 0;}
+.sheet-item:last-child{border-radius:0 0 8px 8px;}
+.sheet-num{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--accent);line-height:1;flex-shrink:0;}
+.sheet-name{font-family:'DM Mono',monospace;font-size:11px;color:var(--sand);letter-spacing:.1em;margin-bottom:4px;}
+.sheet-desc{font-size:13px;color:var(--sand-dim);font-weight:300;line-height:1.6;}
+
+/* ── FOR WHO ── */
+.forwho{padding:6rem 2rem;background:var(--paper-dim);}
+.forwho-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;max-width:800px;margin:0 auto;}
+.who-card{background:var(--white);border-radius:8px;padding:1.25rem;border-left:3px solid var(--accent);}
+.who-title{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:4px;}
+.who-desc{font-size:12px;color:var(--muted);font-weight:300;line-height:1.5;}
+
+/* ── TESTIMONIAL (placeholder) ── */
+.social{padding:5rem 2rem;background:var(--paper);}
+.quote-block{max-width:600px;margin:0 auto;text-align:center;}
+.quote-mark{font-family:'Bebas Neue',sans-serif;font-size:80px;color:var(--accent);opacity:.2;line-height:.8;margin-bottom:.5rem;}
+.quote-text{font-size:18px;color:var(--ink);line-height:1.7;font-style:italic;font-weight:300;margin-bottom:1.5rem;}
+.quote-author{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:.1em;}
+.stars{color:var(--accent);font-size:16px;margin-bottom:1rem;}
+
+/* ── CTA FINAL ── */
+.cta-final{padding:7rem 2rem;background:var(--ink);text-align:center;}
+.cta-final-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(42px,8vw,90px);color:var(--white);letter-spacing:2px;line-height:.95;margin-bottom:1.5rem;}
+.cta-final-title span{color:var(--accent);}
+.cta-final-sub{font-size:15px;color:var(--sand-dim);margin-bottom:2.5rem;font-weight:300;line-height:1.7;max-width:460px;margin-left:auto;margin-right:auto;}
+.cta-includes{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:2.5rem;}
+.include-chip{font-family:'DM Mono',monospace;font-size:10px;padding:6px 14px;border:0.5px solid rgba(200,192,154,0.2);border-radius:999px;color:var(--sand-dim);letter-spacing:.08em;}
+.cta-big-btn{display:inline-block;background:var(--accent);color:var(--white);padding:18px 48px;border-radius:4px;font-family:'DM Mono',monospace;font-size:13px;font-weight:500;letter-spacing:.15em;text-decoration:none;transition:all .2s;border:none;cursor:pointer;}
+.cta-big-btn:hover{background:var(--accent-dim);transform:translateY(-2px);}
+.cta-guarantee{font-size:12px;color:var(--muted);margin-top:16px;font-family:'DM Mono',monospace;letter-spacing:.05em;}
+
+/* ── FAQ ── */
+.faq{padding:5rem 2rem;background:var(--paper);}
+.faq-list{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:1px;}
+.faq-item{background:var(--white);border:0.5px solid var(--paper-dim);}
+.faq-item:first-child{border-radius:8px 8px 0 0;}
+.faq-item:last-child{border-radius:0 0 8px 8px;}
+.faq-q{padding:1.1rem 1.25rem;font-size:14px;font-weight:500;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;}
+.faq-q::after{content:'＋';font-size:16px;color:var(--accent);transition:transform .2s;}
+.faq-item.open .faq-q::after{transform:rotate(45deg);}
+.faq-a{font-size:13px;color:var(--muted);line-height:1.7;font-weight:300;max-height:0;overflow:hidden;transition:max-height .3s ease,padding .2s;}
+.faq-item.open .faq-a{max-height:200px;padding:0 1.25rem 1.1rem;}
+
+/* ── FOOTER ── */
+footer{background:var(--ink);padding:2rem;text-align:center;}
+.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:var(--white);margin-bottom:6px;}
+.footer-logo span{color:var(--accent);}
+.footer-sub{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.18em;color:var(--muted);}
+.footer-links{display:flex;gap:20px;justify-content:center;margin-top:1rem;}
+.footer-links a{font-size:12px;color:var(--muted);text-decoration:none;transition:color .2s;}
+.footer-links a:hover{color:var(--sand);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:600px){
+  .preview-screen{grid-template-columns:1fr 1fr;}
+  .preview-kpi:nth-child(3),.preview-kpi:nth-child(4){display:none;}
+  nav{padding:.9rem 1.25rem;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">STRIKE<span>BASE</span></a>
+  <a href="#comprar" class="nav-cta">OBTENER PLANTILLA</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;">
+    <div class="hero-tag">// PRODUCTO DIGITAL · EXCEL TEMPLATE</div>
+    <h1 class="hero-title">SISTEMA DE<br/><span>PRODUCTIVIDAD</span></h1>
+    <p class="hero-sub">La plantilla en Excel que transforma tus intenciones en disciplina real. Dashboard semanal, registro mensual, estadísticas por categoría y guía de uso incluida.</p>
+    <div class="hero-price-wrap">
+      <div class="hero-price">S/ 19.90</div>
+      <div>
+        <div class="hero-price-old">S/ 39.90</div>
+        <div class="hero-price-badge">50% OFF · LANZAMIENTO</div>
+      </div>
+    </div>
+    <a href="#comprar" class="hero-btn">OBTENER AHORA ↗</a>
+    <div class="hero-note">Descarga instantánea · Compatible con Excel y Google Sheets</div>
+
+    <!-- PREVIEW MOCKUP -->
+    <div class="hero-preview">
+      <div class="preview-bar">
+        <div class="preview-dot" style="background:#FF5F57;"></div>
+        <div class="preview-dot" style="background:#FFBD2E;"></div>
+        <div class="preview-dot" style="background:#28CA41;"></div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(200,192,154,0.4);margin-left:8px;">STRIKEBASE · Dashboard.xlsx</div>
+      </div>
+      <div class="preview-screen">
+        <div class="preview-kpi"><div class="preview-kpi-val">10</div><div class="preview-kpi-lbl">HÁBITOS</div></div>
+        <div class="preview-kpi"><div class="preview-kpi-val" style="color:#4A6B2C;">7</div><div class="preview-kpi-lbl">COMPLETADOS</div></div>
+        <div class="preview-kpi"><div class="preview-kpi-val">12</div><div class="preview-kpi-lbl">RACHA</div></div>
+        <div class="preview-kpi"><div class="preview-kpi-val">84%</div><div class="preview-kpi-lbl">PROMEDIO</div></div>
+        <div class="preview-habits">
+          <div class="preview-row"><div class="preview-check done"></div><div class="preview-habit-name">Bloque de trabajo profundo (2h)</div><div class="preview-days"><div class="preview-cell on"></div><div class="preview-cell on"></div><div class="preview-cell on"></div><div class="preview-cell on"></div><div class="preview-cell"></div><div class="preview-cell on"></div><div class="preview-cell on"></div></div></div>
+          <div class="preview-row"><div class="preview-check done"></div><div class="preview-habit-name">Sin redes sociales hasta mediodía</div><div class="preview-days"><div class="preview-cell on"></div><div class="preview-cell"></div><div class="preview-cell on"></div><div class="preview-cell on"></div><div class="preview-cell on"></div><div class="preview-cell on"></div><div class="preview-cell on"></div></div></div>
+          <div class="preview-row"><div class="preview-check empty"></div><div class="preview-habit-name">Lectura 20 min</div><div class="preview-days"><div class="preview-cell on"></div><div class="preview-cell on"></div><div class="preview-cell"></div><div class="preview-cell on"></div><div class="preview-cell on"></div><div class="preview-cell"></div><div class="preview-cell on"></div></div></div>
+          <div class="preview-row"><div class="preview-check done"></div><div class="preview-habit-name">Planificación del día siguiente</div><div class="preview-days"><div class="preview-cell on"></div><div class="preview-cell on"></div><div class="preview-cell on"></div><div class="preview-cell"></div><div class="preview-cell on"></div><div class="preview-cell on"></div><div class="preview-cell on"></div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features">
+  <div class="section-tag">// QUÉ INCLUYE</div>
+  <h2 class="section-title">TODO LO QUE NECESITAS</h2>
+  <div class="features-grid">
+    <div class="feat-card">
+      <span class="feat-icon">DASHBOARD</span>
+      <div class="feat-title">Vista semanal en tiempo real</div>
+      <div class="feat-desc">KPIs automáticos: hábitos activos, completados hoy, racha actual y promedio semanal. Todo calculado solo con tus datos.</div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-icon">REGISTRO</span>
+      <div class="feat-title">Calendario mensual completo</div>
+      <div class="feat-desc">31 días de seguimiento por hábito con totales automáticos, porcentaje de cumplimiento y resumen del mes.</div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-icon">STATS</span>
+      <div class="feat-title">Estadísticas por categoría</div>
+      <div class="feat-desc">Analiza tu rendimiento por Enfoque, Bienestar, Aprendizaje y Organización. Detecta dónde necesitas trabajar más.</div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-icon">TENDENCIA</span>
+      <div class="feat-title">Tendencia de 8 semanas</div>
+      <div class="feat-desc">Tabla de evolución semanal para saber si estás mejorando, estancándote o necesitas un ajuste de estrategia.</div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-icon">HÁBITOS</span>
+      <div class="feat-title">10 hábitos listos + espacio para los tuyos</div>
+      <div class="feat-desc">Incluye los 10 hábitos de productividad más impactantes, totalmente personalizables. Agrega los tuyos en segundos.</div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-icon">GUÍA</span>
+      <div class="feat-title">Guía de uso paso a paso</div>
+      <div class="feat-desc">Instrucciones claras para empezar desde el primer día, más 5 consejos de alto rendimiento para maximizar resultados.</div>
+    </div>
+  </div>
+</section>
+
+<!-- SHEETS -->
+<section class="sheets">
+  <div class="section-tag" style="color:var(--sand-dim);">// LAS 5 HOJAS</div>
+  <h2 class="section-title">UN SISTEMA <span style="color:var(--accent);">COMPLETO</span></h2>
+  <div class="sheets-list">
+    <div class="sheet-item">
+      <div class="sheet-num">01</div>
+      <div><div class="sheet-name">📊 DASHBOARD</div><div class="sheet-desc">Tu centro de operaciones diario. KPIs en tiempo real, tabla de hábitos semanal y totales automáticos. Ábrelo cada mañana.</div></div>
+    </div>
+    <div class="sheet-item">
+      <div class="sheet-num">02</div>
+      <div><div class="sheet-name">📋 HÁBITOS</div><div class="sheet-desc">Configura tu lista de hábitos, asigna categorías, marca el check de hoy y añade notas de estrategia para cada uno.</div></div>
+    </div>
+    <div class="sheet-item">
+      <div class="sheet-num">03</div>
+      <div><div class="sheet-name">📅 REGISTRO MENSUAL</div><div class="sheet-desc">Vista de los 31 días del mes. Perfecta para ver patrones, rachas y los días donde más fallas. Todo calculado automáticamente.</div></div>
+    </div>
+    <div class="sheet-item">
+      <div class="sheet-num">04</div>
+      <div><div class="sheet-name">📈 ESTADÍSTICAS</div><div class="sheet-desc">Rendimiento por categoría y tabla de tendencia semanal. Analiza si vas mejorando o necesitas ajustar tu enfoque.</div></div>
+    </div>
+    <div class="sheet-item">
+      <div class="sheet-num">05</div>
+      <div><div class="sheet-name">📖 GUÍA DE USO</div><div class="sheet-desc">Instrucciones paso a paso y consejos de alto rendimiento. Ideal para empezar con el pie derecho desde el día uno.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FOR WHO -->
+<section class="forwho">
+  <div class="section-tag">// ¿PARA QUIÉN ES?</div>
+  <h2 class="section-title">DISEÑADO PARA</h2>
+  <div class="forwho-grid">
+    <div class="who-card"><div class="who-title">Emprendedores</div><div class="who-desc">Que quieren mantener disciplina operativa sin depender solo de la motivación.</div></div>
+    <div class="who-card"><div class="who-title">Estudiantes</div><div class="who-desc">Que necesitan estructurar su rutina de estudio y hábitos académicos.</div></div>
+    <div class="who-card"><div class="who-title">Profesionales</div><div class="who-desc">Que buscan maximizar su rendimiento diario con un sistema simple y efectivo.</div></div>
+    <div class="who-card"><div class="who-title">Cualquiera que quiera mejorar</div><div class="who-desc">No se necesita experiencia previa. Si tienes Excel o Google Sheets, estás listo.</div></div>
+  </div>
+</section>
+
+<!-- TESTIMONIAL -->
+<section class="social">
+  <div class="quote-block">
+    <div class="section-tag">// EARLY ADOPTERS</div>
+    <div class="stars">★★★★★</div>
+    <div class="quote-mark">"</div>
+    <p class="quote-text">Llevaba meses intentando ser más productivo sin resultados. Con esta plantilla vi mis patrones por primera vez y en tres semanas ya completaba el 80% de mis hábitos.</p>
+    <div class="quote-author">— USUARIO BETA · LIMA, PERÚ</div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="cta-final" id="comprar">
+  <h2 class="cta-final-title">EMPIEZA HOY<br/><span>MISMO</span></h2>
+  <p class="cta-final-sub">Una sola compra. Tuya para siempre. Sin suscripciones, sin complicaciones.</p>
+  <div class="cta-includes">
+    <span class="include-chip">✓ 5 hojas profesionales</span>
+    <span class="include-chip">✓ 134 fórmulas automáticas</span>
+    <span class="include-chip">✓ Compatible Excel y Google Sheets</span>
+    <span class="include-chip">✓ Descarga instantánea</span>
+    <span class="include-chip">✓ Actualizaciones gratuitas</span>
+  </div>
+  <div style="margin-bottom:1.5rem;">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:52px;color:var(--white);letter-spacing:1px;">S/ 19.90</div>
+    <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-top:4px;">Precio de lanzamiento · Sube a S/ 39.90 pronto</div>
+  </div>
+  <!-- Reemplaza el href con tu link de Gumroad o Lemon Squeezy -->
+  <a href="#" class="cta-big-btn">OBTENER LA PLANTILLA ↗</a>
+  <div class="cta-guarantee">// Pago seguro · Descarga inmediata</div>
+</section>
+
+<!-- FAQ -->
+<section class="faq">
+  <div class="section-tag">// PREGUNTAS FRECUENTES</div>
+  <h2 class="section-title">FAQ</h2>
+  <div class="faq-list">
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">¿Necesito una versión específica de Excel?</div>
+      <div class="faq-a">No. La plantilla funciona con Excel 2016 o superior, Microsoft 365, y también con Google Sheets. Si tienes cualquiera de estos, estás listo para empezar.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">¿Puedo personalizar los hábitos?</div>
+      <div class="faq-a">Sí, completamente. Todos los hábitos son editables. Puedes cambiar los 10 que vienen por defecto o agregar los tuyos en las filas en blanco disponibles.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">¿Cómo recibo la plantilla después de pagar?</div>
+      <div class="faq-a">La descarga es inmediata. Al completar el pago recibirás un correo con el link de descarga. El archivo llega en formato .xlsx listo para usar.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">¿Qué diferencia tiene con una plantilla gratuita?</div>
+      <div class="faq-a">Las plantillas gratuitas son genéricas y sin diseño. STRIKEBASE incluye 134 fórmulas automáticas, diseño profesional, 5 hojas conectadas entre sí, guía de uso y está optimizada para el usuario hispanohablante.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">¿Se puede usar junto con la app STRIKEBASE?</div>
+      <div class="faq-a">Sí, es perfectamente complementaria. La app te da análisis con inteligencia artificial y la plantilla te da el detalle mensual en Excel. Muchos usuarios usan ambas.</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">STRIKE<span>BASE</span></div>
+  <div class="footer-sub">// SISTEMA DE VIDA PERSONALIZADO //</div>
+  <div class="footer-links">
+    <a href="/">App</a>
+    <a href="/blog.html">Blog</a>
+    <a href="mailto:contacto@strikebase.pe">Contacto</a>
+  </div>
+</footer>
+
+<script>
+function toggleFaq(el){
+  const item=el.parentElement;
+  item.classList.toggle('open');
+}
+</script>
+</body>
+</html>
