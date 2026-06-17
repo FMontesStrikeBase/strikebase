@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title id="pageTitle">Artículo · STRIKEBASE</title>
+<meta name="description" id="pageDesc" content=""/>
+<meta name="keywords" id="pageKeywords" content=""/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --ink:#1A1A12;--paper:#F2EDE0;--paper-dim:#E5DFC8;
+  --accent:#D4541A;--sand:#C8C09A;--sand-dim:#A09870;
+  --white:#FAFAF5;--muted:#8A8570;--success:#4A6B2C;
+}
+body{background:var(--paper);color:var(--ink);font-family:'DM Sans',sans-serif;line-height:1.75;}
+
+nav{background:var(--ink);padding:.9rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--white);text-decoration:none;}
+.nav-logo span{color:var(--accent);}
+.nav-links{display:flex;gap:24px;align-items:center;}
+.nav-links a{font-family:'DM Mono',monospace;font-size:11px;color:var(--sand-dim);text-decoration:none;letter-spacing:.08em;}
+.nav-links a:hover{color:var(--sand);}
+.nav-cta{background:var(--accent);color:var(--white)!important;padding:7px 16px;border-radius:4px;}
+
+.post-hero{background:var(--ink);padding:4.5rem 2rem 3.5rem;text-align:center;}
+.post-hero-cat{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.2em;color:var(--accent);margin-bottom:1rem;display:block;text-transform:uppercase;}
+.post-hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(32px,6vw,64px);color:var(--white);line-height:1;letter-spacing:1px;margin-bottom:1.25rem;}
+.post-hero-meta{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:.05em;}
+.meta-dot{width:4px;height:4px;border-radius:50%;background:var(--accent);}
+
+.article-wrap{max-width:680px;margin:0 auto;padding:3rem 2rem 5rem;}
+.article-content h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,4vw,40px);margin:2.5rem 0 1rem;letter-spacing:1px;line-height:1;}
+.article-content h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(26px,4vw,38px);margin:2.5rem 0 1rem;letter-spacing:1px;line-height:1;}
+.article-content h3{font-size:17px;font-weight:600;margin:1.75rem 0 .75rem;}
+.article-content p{font-size:15px;color:#2A2A1A;margin-bottom:1.25rem;font-weight:300;}
+.article-content strong{font-weight:600;color:var(--ink);}
+.article-content em{font-style:italic;color:var(--muted);}
+.article-content ul,.article-content ol{margin:0 0 1.25rem 1.25rem;font-size:15px;color:#2A2A1A;font-weight:300;}
+.article-content li{margin-bottom:.5rem;}
+.article-content a{color:var(--accent);text-decoration:underline;}
+.article-content blockquote{border-left:3px solid var(--accent);background:var(--paper-dim);padding:1rem 1.5rem;border-radius:0 8px 8px 0;margin:1.5rem 0;font-style:italic;color:var(--muted);}
+.article-content img{width:100%;border-radius:8px;margin:1.5rem 0;}
+.article-content code{background:var(--paper-dim);padding:2px 6px;border-radius:4px;font-family:'DM Mono',monospace;font-size:13px;}
+.article-content hr{border:none;border-top:0.5px solid var(--paper-dim);margin:2rem 0;}
+
+.stat-block{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:2rem 0;}
+.stat-card{background:var(--white);border:0.5px solid var(--paper-dim);border-radius:8px;padding:1.25rem;text-align:center;}
+.stat-num{font-family:'Bebas Neue',sans-serif;font-size:40px;color:var(--accent);line-height:1;}
+.stat-lbl{font-size:12px;color:var(--muted);margin-top:4px;font-weight:300;}
+
+.callout{background:var(--paper-dim);border-left:3px solid var(--accent);padding:1.25rem 1.5rem;border-radius:0 8px 8px 0;margin:2rem 0;}
+.callout-tag{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.15em;color:var(--accent);margin-bottom:6px;text-transform:uppercase;}
+.callout p{margin-bottom:0;font-size:14px;}
+
+.share-bar{display:flex;gap:10px;justify-content:center;margin:3rem 0;flex-wrap:wrap;}
+.share-btn{font-family:'DM Mono',monospace;font-size:10px;padding:8px 16px;border:0.5px solid var(--sand-dim);border-radius:999px;background:var(--white);color:var(--ink);text-decoration:none;letter-spacing:.08em;cursor:pointer;transition:all .15s;}
+.share-btn:hover{border-color:var(--accent);color:var(--accent);}
+
+.mid-cta{background:var(--ink);border-radius:10px;padding:2rem;text-align:center;margin:3rem 0;}
+.mid-cta-tag{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.18em;color:var(--accent);margin-bottom:8px;}
+.mid-cta-title{font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--white);letter-spacing:1px;margin-bottom:8px;}
+.mid-cta-sub{font-size:13px;color:var(--sand-dim);margin-bottom:1.25rem;font-weight:300;}
+.mid-cta-btn{display:inline-block;background:var(--accent);color:var(--white);padding:12px 28px;border-radius:4px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.12em;text-decoration:none;}
+
+.back-link{display:inline-flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);text-decoration:none;letter-spacing:.08em;margin-bottom:2rem;}
+.back-link:hover{color:var(--accent);}
+
+.loading-state,.error-state{text-align:center;padding:5rem 2rem;color:var(--muted);}
+.error-state-title{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--ink);margin-bottom:1rem;}
+
+footer{background:var(--ink);padding:2rem;text-align:center;}
+.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:var(--white);}
+.footer-logo span{color:var(--accent);}
+.footer-sub{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.18em;color:var(--muted);margin-top:4px;}
+.footer-links{display:flex;gap:20px;justify-content:center;margin-top:1rem;}
+.footer-links a{font-size:12px;color:var(--muted);text-decoration:none;}
+.footer-links a:hover{color:var(--sand);}
+
+@media(max-width:600px){
+  nav{padding:.9rem 1.25rem;}
+  .article-wrap{padding:2rem 1.25rem 4rem;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">STRIKE<span>BASE</span></a>
+  <div class="nav-links">
+    <a href="/blog.html">Blog</a>
+    <a href="/" class="nav-cta">APP GRATIS</a>
+  </div>
+</nav>
+
+<div id="postHero" class="post-hero">
+  <div class="loading-state" style="color:var(--sand-dim);">Cargando artículo...</div>
+</div>
+
+<div class="article-wrap">
+  <a href="/blog.html" class="back-link">← Volver al blog</a>
+  <div class="article-content" id="articleContent"></div>
+
+  <div class="mid-cta">
+    <div class="mid-cta-tag">// SIGUIENTE PASO</div>
+    <div class="mid-cta-title">USA STRIKEBASE HOY</div>
+    <div class="mid-cta-sub">Registra tus hábitos, recibe análisis personalizado y construye la disciplina que buscas.</div>
+    <a href="/" class="mid-cta-btn">PROBAR LA APP ↗</a>
+  </div>
+
+  <div class="share-bar">
+    <a class="share-btn" id="shareWhatsapp" href="#" target="_blank">COMPARTIR EN WHATSAPP</a>
+    <button class="share-btn" onclick="copyLink()">COPIAR LINK</button>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-logo">STRIKE<span>BASE</span></div>
+  <div class="footer-sub">// SISTEMA DE VIDA PERSONALIZADO //</div>
+  <div class="footer-links">
+    <a href="/">App</a>
+    <a href="/blog.html">Blog</a>
+    <a href="/plantilla.html">Plantilla</a>
+    <a href="mailto:contacto@strikebase.net.pe">Contacto</a>
+  </div>
+</footer>
+
+<script>
+const GH_USER = 'FMontesStrikeBase';
+const GH_REPO = 'strikebase';
+const GH_BRANCH = 'main';
+const POSTS_PATH = '_posts';
+
+const CAT_LABELS = {
+  productividad: 'Productividad',
+  salud: 'Salud y Bienestar',
+  finanzas: 'Hábitos Financieros',
+  disciplina: 'Disciplina Mental',
+  rutinas: 'Rutinas'
+};
+
+function parseFrontmatter(raw){
+  const match = raw.match(/^---\s*\n([\s\S]*?)\n---\s*\n([\s\S]*)$/);
+  if(!match) return null;
+  const fmText = match[1];
+  const body = match[2];
+  const lines = fmText.split('\n');
+  const fm = {};
+  let i = 0;
+  while(i < lines.length){
+    const line = lines[i];
+    const topMatch = line.match(/^(\w+):\s*(.*)$/);
+    if(!topMatch){ i++; continue; }
+    const key = topMatch[1];
+    const rest = topMatch[2].trim();
+    if(rest !== ''){
+      // simple scalar value
+      fm[key] = rest.replace(/^["']|["']$/g,'');
+      i++;
+    } else {
+      // possible list of objects below (indented with "- ")
+      const items = [];
+      i++;
+      while(i < lines.length && /^\s*-\s/.test(lines[i])){
+        const item = {};
+        // first field on the "- " line
+        const firstLine = lines[i].replace(/^\s*-\s*/, '');
+        const firstField = firstLine.match(/^(\w+):\s*(.*)$/);
+        if(firstField){
+          item[firstField[1]] = firstField[2].trim().replace(/^["']|["']$/g,'');
+        }
+        i++;
+        // subsequent indented fields belonging to same item
+        while(i < lines.length && /^\s{2,}\w+:/.test(lines[i])){
+          const f = lines[i].trim().match(/^(\w+):\s*(.*)$/);
+          if(f) item[f[1]] = f[2].trim().replace(/^["']|["']$/g,'');
+          i++;
+        }
+        items.push(item);
+      }
+      fm[key] = items;
+    }
+  }
+  return {...fm, body};
+}
+
+// ── Minimal markdown to HTML converter ──
+function markdownToHtml(md){
+  let html = md;
+  // Escape basic HTML first is skipped for simplicity (trusted content from admin)
+  html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+  html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+  html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
+  html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+  html = html.replace(/!\[(.*?)\]\((.*?)\)/g, '<img src="$2" alt="$1"/>');
+  html = html.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>');
+  html = html.replace(/^> (.*$)/gim, '<blockquote>$1</blockquote>');
+  html = html.replace(/^---$/gim, '<hr/>');
+  // Lists
+  html = html.replace(/^\s*-\s+(.*$)/gim, '<li>$1</li>');
+  html = html.replace(/(<li>.*<\/li>\n?)+/g, m => '<ul>'+m+'</ul>');
+  // Paragraphs (lines not already wrapped in a block tag)
+  html = html.split(/\n\n+/).map(block=>{
+    const trimmed = block.trim();
+    if(!trimmed) return '';
+    if(/^<(h1|h2|h3|ul|ol|li|blockquote|img|hr)/.test(trimmed)) return trimmed;
+    return `<p>${trimmed.replace(/\n/g,' ')}</p>`;
+  }).join('\n');
+  return html;
+}
+
+function buildStatBlock(stats){
+  if(!stats || !stats.length) return '';
+  const cards = stats.map(s=>`<div class="stat-card"><div class="stat-num">${s.number||''}</div><div class="stat-lbl">${s.label||''}</div></div>`).join('');
+  return `<div class="stat-block">${cards}</div>`;
+}
+
+function buildCallouts(callouts){
+  if(!callouts || !callouts.length) return [];
+  return callouts.map(c=>`<div class="callout"><div class="callout-tag">// ${c.tag||'DATO'}</div><p>${c.text||''}</p></div>`);
+}
+
+function insertVisualBlocks(html, statsHtml, calloutsHtml){
+  // Split content into paragraph-level blocks to insert visuals between them
+  const blocks = html.split(/\n(?=<)/).filter(b=>b.trim());
+  const paragraphIdxs = [];
+  blocks.forEach((b,idx)=>{ if(b.trim().startsWith('<p>')) paragraphIdxs.push(idx); });
+
+  // Insert stat block after the 1st paragraph
+  if(statsHtml && paragraphIdxs.length>0){
+    blocks.splice(paragraphIdxs[0]+1, 0, statsHtml);
+  }
+  // Recompute paragraph indices after insertion for callouts and insert after 2nd, 3rd paragraphs found
+  let calloutIdx = 0;
+  if(calloutsHtml.length){
+    const updatedParaIdxs = [];
+    blocks.forEach((b,idx)=>{ if(b.trim().startsWith('<p>')) updatedParaIdxs.push(idx); });
+    // place each callout after every other paragraph, spaced out, starting from the 2nd paragraph
+    let insertedOffset = 0;
+    calloutsHtml.forEach((calloutHtml, i)=>{
+      const targetParaPos = 1 + i*2; // 2nd, 4th, 6th paragraph...
+      if(updatedParaIdxs[targetParaPos] !== undefined){
+        const insertAt = updatedParaIdxs[targetParaPos] + 1 + insertedOffset;
+        blocks.splice(insertAt, 0, calloutHtml);
+        insertedOffset++;
+      } else {
+        blocks.push(calloutHtml); // fallback: append at the end
+      }
+    });
+  }
+  return blocks.join('\n');
+}
+  const params = new URLSearchParams(window.location.search);
+  return params.get('slug');
+}
+
+async function loadPost(){
+  const slug = getSlug();
+  const heroEl = document.getElementById('postHero');
+  const contentEl = document.getElementById('articleContent');
+
+  if(!slug){
+    heroEl.innerHTML = `<div class="error-state"><div class="error-state-title">ARTÍCULO NO ENCONTRADO</div><p style="color:var(--sand-dim);">No se especificó qué artículo cargar.</p></div>`;
+    return;
+  }
+
+  try{
+    const url = `https://raw.githubusercontent.com/${GH_USER}/${GH_REPO}/${GH_BRANCH}/${POSTS_PATH}/${slug}.md`;
+    const res = await fetch(url);
+    if(!res.ok) throw new Error('Artículo no encontrado');
+    const raw = await res.text();
+    const fm = parseFrontmatter(raw);
+    if(!fm) throw new Error('Formato inválido');
+
+    document.getElementById('pageTitle').textContent = `${fm.title} · STRIKEBASE`;
+    document.getElementById('pageDesc').setAttribute('content', fm.description||'');
+    document.getElementById('pageKeywords').setAttribute('content', fm.keywords||'');
+
+    const dateObj = fm.date ? new Date(fm.date) : null;
+    const dateStr = dateObj ? dateObj.toLocaleDateString('es-PE',{day:'numeric',month:'long',year:'numeric'}) : '';
+
+    heroEl.innerHTML = `
+      <span class="post-hero-cat">${CAT_LABELS[fm.category]||fm.category||''}</span>
+      <h1 class="post-hero-title">${fm.title}</h1>
+      <div class="post-hero-meta">
+        <span>STRIKEBASE</span><span class="meta-dot"></span>
+        <span>${dateStr}</span><span class="meta-dot"></span>
+        <span>${fm.readtime||5} min de lectura</span>
+      </div>`;
+
+    contentEl.innerHTML = insertVisualBlocks(
+      markdownToHtml(fm.body||''),
+      buildStatBlock(fm.stats),
+      buildCallouts(fm.callouts)
+    );
+
+    document.getElementById('shareWhatsapp').href = `https://wa.me/?text=${encodeURIComponent(fm.title+' — '+window.location.href)}`;
+  }catch(e){
+    heroEl.innerHTML = `<div class="error-state"><div class="error-state-title">ARTÍCULO NO ENCONTRADO</div><p style="color:var(--sand-dim);">Puede que el link sea incorrecto o el artículo fue eliminado.</p></div>`;
+  }
+}
+
+function copyLink(){
+  navigator.clipboard.writeText(window.location.href);
+  const btn = event.target;
+  const original = btn.textContent;
+  btn.textContent = '✓ LINK COPIADO';
+  setTimeout(()=>btn.textContent=original, 2000);
+}
+
+loadPost();
+</script>
+</body>
+</html>
