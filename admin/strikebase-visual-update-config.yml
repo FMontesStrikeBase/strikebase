@@ -1,0 +1,49 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "images/uploads"
+public_folder: "/images/uploads"
+
+locale: es
+
+collections:
+  - name: "blog"
+    label: "Artículos del Blog"
+    folder: "_posts"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "Título", name: "title", widget: "string" }
+      - { label: "Fecha de publicación", name: "date", widget: "datetime" }
+      - { label: "Descripción (SEO)", name: "description", widget: "string", hint: "Máx 160 caracteres. Aparece en Google." }
+      - { label: "Palabras clave (SEO)", name: "keywords", widget: "string", hint: "Separadas por coma. Ej: hábitos, productividad, rutina" }
+      - label: "Categoría"
+        name: "category"
+        widget: "select"
+        options:
+          - { label: "Productividad", value: "productividad" }
+          - { label: "Salud y Bienestar", value: "salud" }
+          - { label: "Hábitos Financieros", value: "finanzas" }
+          - { label: "Disciplina Mental", value: "disciplina" }
+          - { label: "Rutinas", value: "rutinas" }
+      - { label: "Tiempo de lectura (min)", name: "readtime", widget: "number", default: 5 }
+      - { label: "Imagen destacada", name: "image", widget: "image", required: false }
+      - label: "Datos Destacados (Stats)"
+        name: "stats"
+        widget: "list"
+        required: false
+        hint: "Agrega números o datos clave que quieras resaltar visualmente en el artículo (ej: 66 / días para formar un hábito). Aparecerán como tarjetas destacadas debajo del primer párrafo."
+        fields:
+          - { label: "Número o dato corto", name: "number", widget: "string", hint: "Ej: 66, 45%, 3x" }
+          - { label: "Descripción breve", name: "label", widget: "string", hint: "Ej: días promedio para formar un hábito" }
+      - label: "Bloques Destacados (Callouts)"
+        name: "callouts"
+        widget: "list"
+        required: false
+        hint: "Agrega cajas de texto destacado dentro del artículo (datos clave, advertencias, tips). Se insertarán automáticamente después del segundo párrafo del cuerpo."
+        fields:
+          - { label: "Etiqueta superior", name: "tag", widget: "string", hint: "Ej: DATO CLAVE, ADVERTENCIA, TIP TÁCTICO" }
+          - { label: "Texto del bloque", name: "text", widget: "text" }
+      - { label: "Contenido", name: "body", widget: "markdown" }
+      - { label: "Publicado", name: "published", widget: "boolean", default: true }
