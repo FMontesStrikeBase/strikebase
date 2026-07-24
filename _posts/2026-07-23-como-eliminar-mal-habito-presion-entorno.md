@@ -6,8 +6,8 @@ keywords: eliminar mal hábito, presión de entorno, fuerza de voluntad, cambio 
 category: rutinas
 readtime: 8
 stats:
-  - number: "14 → 9"
-    label: "oficiales que completaron el curso de Infantería de Marina"
+  - number: "20 → 9"
+    label: "oficiales que completaron el curso de Infantería"
   - number: "100km"
     label: "la marcha más exigente del curso, completada en 5 días"
 callouts:
@@ -15,7 +15,7 @@ callouts:
     text: "Intervenciones basadas en el entorno, como eliminar señales que disparan la conducta o añadir fricción al camino de acceso, producen cambios conductuales consistentes e independientes de la motivación del individuo."
 published: true
 ---
-> **Sobre el autor:** Fernando es un oficial peruano con formación en fuerzas de infantería de élite. Terminó primero en su curso de selección. En Strikebase traduce métodos de entrenamiento militar y disciplina operacional en sistemas aplicables a la vida civil. [Conoce su historia completa.](/sobre-mi.html)
+> **Sobre el autor:** Adrian es un oficial peruano con formación en fuerzas de infantería de élite. Terminó primero en su curso de selección. En Strikebase traduce métodos de entrenamiento militar y disciplina operacional en sistemas aplicables a la vida civil. [Conoce su historia completa.](/sobre-mi.html)
 
 No tienes un problema de voluntad.
 
@@ -57,13 +57,13 @@ Estas dos palancas combinadas son más potentes que cualquier cantidad de fuerza
 
 ## La lección del curso: el entorno que reemplazó lo que la motivación no habría podido
 
-Antes de entrar al curso de Infantería de Marina tenía una base física real: había completado una maratón de 42km y nadado 5.5km desde la Isla San Lorenzo hasta la Escuela Naval del Perú. Entrenaba con disciplina, descansaba mis horas, cuidaba la alimentación. Por eso creía estar preparado.
+Antes de entrar al curso de Infantería tenía una base física real: había completado una maratón de 42km y nadado 5.5km desde la Isla San Lorenzo hasta la Escuela Naval del Perú. Entrenaba con disciplina, descansaba mis horas, cuidaba la alimentación. Por eso creía estar preparado.
 
 No lo estaba. No para ese entorno.
 
 La diferencia no era la distancia ni el volumen de entrenamiento. Era la presión. Afuera, uno elige cuándo empujar y cuándo descansar. En el curso, las actividades más exigentes llegaban en las peores condiciones posibles: sed, calor, privación de sueño, cansancio acumulado, fatiga e incertidumbre. La primera caminata larga fue de 22km. Comenzamos a las 5am sin haber dormido nada el día anterior y retornamos a la base a las 2pm. Ninguna maratón me había preparado para eso.
 
-De los 14 oficiales que comenzamos, terminamos 9. Los otros 5 no salieron por falta de capacidad física — salieron porque el entorno los venció antes de que pudieran adaptarse a él.
+De los 20 oficiales que comenzamos, terminamos 9. Los otros 11 no salieron por falta de capacidad física — salieron porque el entorno los venció antes de que pudieran adaptarse a él.
 
 Y la presión del entorno no eliminó los malos hábitos por convicción. Los desplazó por necesidad.
 
