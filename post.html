@@ -7,6 +7,26 @@
 <meta name="description" id="pageDesc" content=""/>
 <meta name="keywords" id="pageKeywords" content=""/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<script>
+// Pre-render SEO: inyecta title y meta tags antes del render completo
+// Permite que Google indexe title y description correctos desde el primer crawl
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  var slug = params.get('slug');
+  if (!slug) return;
+  fetch('https://raw.githubusercontent.com/FMontesStrikeBase/strikebase/main/_posts/' + slug + '.md')
+    .then(function(r) { return r.text(); })
+    .then(function(raw) {
+      var titleMatch = raw.match(/^title:\s*(.+)$/m);
+      var descMatch = raw.match(/^description:\s*(.+)$/m);
+      var kwMatch = raw.match(/^keywords:\s*(.+)$/m);
+      if (titleMatch) document.getElementById('pageTitle').textContent = titleMatch[1].trim() + ' · STRIKEBASE';
+      if (descMatch) document.getElementById('pageDesc').setAttribute('content', descMatch[1].trim());
+      if (kwMatch) document.getElementById('pageKeywords').setAttribute('content', kwMatch[1].trim());
+    })
+    .catch(function() {});
+})();
+</script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
