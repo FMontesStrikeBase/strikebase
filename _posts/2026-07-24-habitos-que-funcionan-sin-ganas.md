@@ -12,10 +12,10 @@ stats:
     label: "fracasa al intentar cambiar varios hábitos a la vez"
 callouts:
   - tag: "REGLA"
-    text: "Un día roto no destruye el hábito. Dos días seguidos sí empiezan a. La regla es simple: nunca pierdas dos veces seguido. No se trata de ser perfecto. Se trata de no dejar que la excepción se convierta en el nuevo estándar."
+    text: "Un día roto no destruye el hábito. Dos días seguidos ya son un antecedente. La regla es simple: nunca pierdas dos veces seguido. No se trata de ser perfecto. Se trata de no dejar que la excepción se convierta en el nuevo estándar."
 published: true
 ---
-> **Sobre el autor:** Fernando es un oficial peruano con formación en fuerzas de infantería de élite. Terminó primero en su curso de selección. En Strikebase traduce métodos de entrenamiento militar y disciplina operacional en sistemas aplicables a la vida civil. [Conoce su historia completa.](/sobre-mi.html)
+> **Sobre el autor:** Adrian es un oficial peruano con formación en fuerzas de infantería de élite. Terminó primero en su curso de selección. En Strikebase traduce métodos de entrenamiento militar y disciplina operacional en sistemas aplicables a la vida civil. [Conoce su historia completa.](/sobre-mi.html)
 
 Esperas sentirte listo. Esperas tener energía. Esperas que llegue "el momento correcto".
 
@@ -141,7 +141,7 @@ No necesitas rediseñar tu vida entera. Necesitas instalar un bucle funcional.
 No hay un número fijo que aplique a todos, James Clear explica que no existe un "número mágico". Según un estudio del University College London citado en el libro, se requieren en promedio 66 días para automatizar una conducta. Lo que sí es consistente: la repetición sin excepciones acelera el proceso más que la intensidad esporádica. Un hábito pequeño hecho todos los días durante 30 días construye más base que un hábito enorme hecho tres veces por semana.
 
 **¿Y si rompo la racha?**
-Un día roto no destruye el hábito. Dos días seguidos sí empiezan a. La regla es simple: nunca pierdas dos veces seguido. No se trata de ser perfecto. Se trata de no dejar que la excepción se convierta en el nuevo estándar.
+Un día roto no destruye el hábito. Dos días seguidos ya son un antecedente. La regla es simple: nunca pierdas dos veces seguido. No se trata de ser perfecto. Se trata de no dejar que la excepción se convierta en el nuevo estándar.
 
 **¿Hay hábitos más fáciles de instalar que otros?**
 Sí. Los hábitos físicos y concretos son más fáciles porque tienen señales claras y resultados inmediatos. Empezar por ahí — movimiento, sueño, rutina matutina — da una base desde la que el resto es más fácil de construir.
