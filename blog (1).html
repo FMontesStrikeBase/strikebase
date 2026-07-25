@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Blog · Disciplina, Hábitos y Productividad · STRIKEBASE</title>
+<meta name="description" content="Artículos sobre hábitos, disciplina y productividad escritos desde la experiencia militar. Tácticas reales para construir la vida que quieres."/>
+<meta name="keywords" content="blog hábitos, disciplina, productividad, artículos hábitos, autosuperación"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto;}
+  *{animation-duration:0.01ms!important;animation-iteration-count:1!important;transition-duration:0.01ms!important;}
+}
+body{background:#020203;color:#FAFAF5;font-family:'Inter',sans-serif;overflow-x:hidden;}
+
+.progress-bar{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,#D4541A,#FF8A3D);z-index:1000;transition:width .1s linear;width:0%;}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.25rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(12px);background:rgba(2,2,3,0.4);}
+.nav-logo{font-size:18px;font-weight:800;letter-spacing:-0.02em;color:#FAFAF5;text-decoration:none;}
+.nav-logo span{color:#FF8A3D;}
+.nav-links{display:flex;align-items:center;gap:28px;}
+.nav-link{font-size:12px;font-weight:500;color:rgba(255,255,255,0.6);text-decoration:none;transition:color .2s;}
+.nav-link:hover{color:#FAFAF5;}
+.nav-link.active{color:#FF8A3D;}
+.nav-cta{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#FAFAF5;padding:8px 18px;border-radius:100px;font-size:12px;font-weight:600;letter-spacing:0.02em;text-decoration:none;transition:all .25s;}
+.nav-cta:hover{background:#D4541A;border-color:#D4541A;}
+
+.grain{position:absolute;inset:0;opacity:0.04;mix-blend-mode:overlay;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23n)'/%3E%3C/svg%3E");}
+.orb{position:absolute;border-radius:50%;filter:blur(70px);opacity:0.8;}
+
+/* HERO */
+.hero{padding:8rem 2rem 3.5rem;position:relative;overflow:hidden;text-align:center;}
+.hero-orb1{width:520px;height:520px;background:radial-gradient(circle,#FF6B1A 0%,#D4541A 45%,transparent 75%);top:-200px;left:50%;transform:translateX(-50%);}
+.hero-tag{font-size:11px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:#FF8A3D;margin-bottom:1.5rem;position:relative;z-index:5;}
+.hero-title{font-size:clamp(38px,7vw,76px);font-weight:800;letter-spacing:-0.03em;line-height:1;margin-bottom:1.25rem;position:relative;z-index:5;}
+.hero-title span{color:#FF8A3D;}
+.hero-sub{font-size:15px;color:rgba(255,255,255,0.6);font-weight:300;max-width:520px;margin:0 auto;position:relative;z-index:5;line-height:1.7;}
+
+/* FILTER BAR */
+.filter-bar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:0 2rem 3rem;position:relative;z-index:5;}
+.filter-chip{padding:8px 18px;border:1px solid rgba(255,255,255,0.15);border-radius:100px;font-size:11px;font-weight:600;letter-spacing:0.05em;color:rgba(255,255,255,0.5);background:rgba(255,255,255,0.03);cursor:pointer;transition:all .2s;}
+.filter-chip:hover{border-color:rgba(255,138,61,0.4);color:#FAFAF5;}
+.filter-chip.active{background:#D4541A;color:#FAFAF5;border-color:#D4541A;}
+
+/* POSTS */
+.posts-wrap{max-width:1000px;margin:0 auto;padding:0 2rem 6rem;}
+.posts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.25rem;}
+
+.post-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:18px;overflow:hidden;text-decoration:none;color:#FAFAF5;transition:all .25s;display:flex;flex-direction:column;opacity:0;transform:translateY(20px);}
+.post-card.visible{opacity:1;transform:translateY(0);}
+.post-card:hover{border-color:rgba(255,138,61,0.35);background:rgba(255,255,255,0.06);transform:translateY(-4px);}
+.post-img{width:100%;height:150px;background:linear-gradient(135deg,rgba(212,84,26,0.25),rgba(2,2,3,0.9));display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;}
+.post-img img{width:100%;height:100%;object-fit:cover;}
+.post-img-placeholder{font-size:26px;font-weight:800;color:rgba(255,138,61,0.5);letter-spacing:-0.02em;}
+.post-body{padding:1.25rem;flex:1;display:flex;flex-direction:column;}
+.post-cat{font-size:9px;font-weight:700;color:#FF8A3D;letter-spacing:0.12em;margin-bottom:8px;text-transform:uppercase;}
+.post-title{font-size:15px;font-weight:600;line-height:1.4;margin-bottom:8px;flex:1;}
+.post-desc{font-size:12px;color:rgba(255,255,255,0.5);line-height:1.6;margin-bottom:12px;font-weight:300;}
+.post-meta{display:flex;align-items:center;gap:8px;font-size:10px;color:rgba(255,255,255,0.35);padding-top:10px;border-top:1px solid rgba(255,255,255,0.08);letter-spacing:0.03em;}
+
+.empty-state{text-align:center;padding:4rem 2rem;color:rgba(255,255,255,0.4);grid-column:1/-1;}
+.empty-state-title{font-size:28px;font-weight:800;color:#FAFAF5;margin-bottom:1rem;letter-spacing:-0.02em;}
+.empty-state a{color:#FF8A3D;}
+.loading-state{text-align:center;padding:4rem;color:rgba(255,255,255,0.4);font-size:12px;letter-spacing:0.05em;grid-column:1/-1;}
+
+footer{padding:3rem 2rem;text-align:center;border-top:1px solid rgba(255,255,255,0.06);position:relative;z-index:5;}
+.footer-logo{font-size:16px;font-weight:800;letter-spacing:-0.02em;}
+.footer-logo span{color:#FF8A3D;}
+.footer-sub{font-size:10px;letter-spacing:0.15em;color:rgba(255,255,255,0.3);margin-top:6px;text-transform:uppercase;}
+.footer-links{display:flex;gap:20px;justify-content:center;margin-top:1.25rem;flex-wrap:wrap;}
+.footer-links a{font-size:12px;color:rgba(255,255,255,0.4);text-decoration:none;}
+.footer-links a:hover{color:#FAFAF5;}
+
+@media(max-width:600px){
+  nav{padding:1rem 1.25rem;}
+  .nav-links{gap:14px;}
+  .nav-link{display:none;}
+  .hero{padding:7rem 1.25rem 2.5rem;}
+  .filter-bar{padding:0 1.25rem 2.5rem;}
+  .posts-wrap{padding:0 1.25rem 4rem;}
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<nav>
+  <a href="/" class="nav-logo">STRIKE<span>BASE</span></a>
+  <div class="nav-links">
+    <a href="/sobre-mi.html" class="nav-link">Sobre mí</a>
+    <a href="/blog.html" class="nav-link active">Blog</a>
+    <a href="/plantillas.html" class="nav-link">Plantillas</a>
+    <a href="/app" class="nav-cta">ENTRAR A LA APP</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="orb hero-orb1"></div>
+  <div class="grain"></div>
+  <div class="hero-tag">// Blog Strikebase</div>
+  <h1 class="hero-title">Disciplina y<br/><span>hábitos</span></h1>
+  <p class="hero-sub">Tácticas reales para construir la vida que quieres. Escrito desde la experiencia, respaldado por evidencia.</p>
+</div>
+
+<div class="filter-bar" id="filterBar">
+  <button class="filter-chip active" data-cat="all" onclick="filterPosts('all',this)">TODOS</button>
+  <button class="filter-chip" data-cat="productividad" onclick="filterPosts('productividad',this)">PRODUCTIVIDAD</button>
+  <button class="filter-chip" data-cat="salud" onclick="filterPosts('salud',this)">SALUD Y BIENESTAR</button>
+  <button class="filter-chip" data-cat="finanzas" onclick="filterPosts('finanzas',this)">FINANZAS</button>
+  <button class="filter-chip" data-cat="disciplina" onclick="filterPosts('disciplina',this)">DISCIPLINA</button>
+  <button class="filter-chip" data-cat="rutinas" onclick="filterPosts('rutinas',this)">RUTINAS</button>
+</div>
+
+<div class="posts-wrap">
+  <div class="posts-grid" id="postsGrid">
+    <div class="loading-state">CARGANDO ARTÍCULOS...</div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-logo">STRIKE<span>BASE</span></div>
+  <div class="footer-sub">Sistema de vida personalizado</div>
+  <div class="footer-links">
+    <a href="/sobre-mi.html">Sobre mí</a>
+    <a href="/blog.html">Blog</a>
+    <a href="/plantillas.html">Plantillas</a>
+    <a href="/app">App</a>
+    <a href="/privacidad.html">Privacidad</a>
+    <a href="/cookies.html">Cookies</a>
+    <a href="/aviso-legal.html">Aviso Legal</a>
+    <a href="mailto:contacto@strikebase.net.pe">Contacto</a>
+  </div>
+</footer>
+
+<script>
+const GH_USER = 'FMontesStrikeBase';
+const GH_REPO = 'strikebase';
+const GH_BRANCH = 'main';
+const POSTS_PATH = '_posts';
+
+const CAT_LABELS = {
+  productividad: 'Productividad',
+  salud: 'Salud y Bienestar',
+  finanzas: 'Hábitos Financieros',
+  disciplina: 'Disciplina Mental',
+  rutinas: 'Rutinas'
+};
+
+let allPosts = [];
+
+function parseFrontmatter(raw){
+  const match = raw.match(/^---\s*\n([\s\S]*?)\n---\s*\n([\s\S]*)$/);
+  if(!match) return null;
+  const fmText = match[1];
+  const body = match[2];
+  const lines = fmText.split('\n');
+  const fm = {};
+  let i = 0;
+  while(i < lines.length){
+    const line = lines[i];
+    const topMatch = line.match(/^(\w+):\s*(.*)$/);
+    if(!topMatch){ i++; continue; }
+    const key = topMatch[1];
+    const rest = topMatch[2].trim();
+    if(rest !== ''){
+      let value = rest;
+      let j = i + 1;
+      while(j < lines.length && /^\s{2,}\S/.test(lines[j]) && !/^\s{2,}-\s/.test(lines[j]) && !/^\s{2,}\w+:\s/.test(lines[j])){
+        value += ' ' + lines[j].trim();
+        j++;
+      }
+      fm[key] = value.replace(/^["']|["']$/g,'').replace(/["']$/,'');
+      i = j;
+    } else {
+      const items = [];
+      i++;
+      while(i < lines.length && /^\s*-\s/.test(lines[i])){
+        const item = {};
+        const firstLine = lines[i].replace(/^\s*-\s*/, '');
+        const firstField = firstLine.match(/^(\w+):\s*(.*)$/);
+        if(firstField){
+          item[firstField[1]] = firstField[2].trim().replace(/^["']|["']$/g,'');
+        }
+        i++;
+        while(i < lines.length && /^\s{2,}\w+:/.test(lines[i])){
+          const f = lines[i].trim().match(/^(\w+):\s*(.*)$/);
+          if(f) item[f[1]] = f[2].trim().replace(/^["']|["']$/g,'');
+          i++;
+        }
+        items.push(item);
+      }
+      fm[key] = items;
+    }
+  }
+  return {...fm, body};
+}
+
+function slugFromFilename(name){
+  return name.replace(/\.md$/,'');
+}
+
+async function loadPosts(){
+  const grid = document.getElementById('postsGrid');
+  try{
+    const listUrl = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${POSTS_PATH}?ref=${GH_BRANCH}`;
+    const listRes = await fetch(listUrl);
+    if(!listRes.ok) throw new Error('No se pudo listar artículos');
+    const files = await listRes.json();
+    const mdFiles = Array.isArray(files) ? files.filter(f=>f.name.endsWith('.md')) : [];
+
+    if(mdFiles.length===0){
+      grid.innerHTML = `<div class="empty-state">
+        <div class="empty-state-title">AÚN NO HAY ARTÍCULOS</div>
+        <p>Publica tu primer artículo desde <a href="/admin">strikebase.net.pe/admin</a></p>
+      </div>`;
+      return;
+    }
+
+    const posts = await Promise.all(mdFiles.map(async f=>{
+      const rawRes = await fetch(f.download_url);
+      const raw = await rawRes.text();
+      const fm = parseFrontmatter(raw);
+      if(!fm) return null;
+      return {
+        slug: slugFromFilename(f.name),
+        title: fm.title||'Sin título',
+        date: fm.date||'',
+        description: fm.description||'',
+        category: fm.category||'productividad',
+        readtime: fm.readtime||'5',
+        image: fm.image||'',
+        published: fm.published!=='false'
+      };
+    }));
+
+    allPosts = posts.filter(p=>p && p.published).sort((a,b)=>new Date(b.date)-new Date(a.date));
+    renderPosts(allPosts);
+  }catch(e){
+    grid.innerHTML = `<div class="empty-state">
+      <div class="empty-state-title">NO SE PUDIERON CARGAR LOS ARTÍCULOS</div>
+      <p>Verifica tu conexión o vuelve a intentarlo en unos minutos.</p>
+    </div>`;
+  }
+}
+
+function renderPosts(posts){
+  const grid = document.getElementById('postsGrid');
+  if(posts.length===0){
+    grid.innerHTML = `<div class="empty-state">
+      <div class="empty-state-title">SIN ARTÍCULOS EN ESTA CATEGORÍA</div>
+      <p>Prueba otra categoría o vuelve pronto.</p>
+    </div>`;
+    return;
+  }
+  grid.innerHTML = '';
+  posts.forEach((p,idx)=>{
+    const dateObj = p.date ? new Date(p.date) : null;
+    const dateStr = dateObj ? dateObj.toLocaleDateString('es-PE',{day:'numeric',month:'short',year:'numeric'}) : '';
+    const card = document.createElement('a');
+    card.href = `/post.html?slug=${encodeURIComponent(p.slug)}`;
+    card.className = 'post-card';
+    card.innerHTML = `
+      <div class="post-img">${p.image ? `<img src="${p.image}" alt="${p.title}"/>` : `<div class="post-img-placeholder">SB</div>`}</div>
+      <div class="post-body">
+        <div class="post-cat">${CAT_LABELS[p.category]||p.category}</div>
+        <div class="post-title">${p.title}</div>
+        <div class="post-desc">${p.description}</div>
+        <div class="post-meta"><span>${dateStr}</span><span>·</span><span>${p.readtime} min</span></div>
+      </div>`;
+    grid.appendChild(card);
+    setTimeout(()=>card.classList.add('visible'), idx*60);
+  });
+}
+
+window.filterPosts = function(cat, btn){
+  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  if(cat==='all') renderPosts(allPosts);
+  else renderPosts(allPosts.filter(p=>p.category===cat));
+};
+
+window.addEventListener('scroll', ()=>{
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const pct = (scrollTop/docHeight)*100;
+  document.getElementById('progressBar').style.width = pct+'%';
+});
+
+loadPosts();
+</script>
+</body>
+</html>

@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title id="pageTitle">Artículo · STRIKEBASE</title>
+<meta name="description" id="pageDesc" content=""/>
+<meta name="keywords" id="pageKeywords" content=""/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<script>
+// Pre-render SEO: inyecta title y meta tags antes del render completo
+// Permite que Google indexe title y description correctos desde el primer crawl
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  var slug = params.get('slug');
+  if (!slug) return;
+  fetch('https://raw.githubusercontent.com/FMontesStrikeBase/strikebase/main/_posts/' + slug + '.md')
+    .then(function(r) { return r.text(); })
+    .then(function(raw) {
+      var titleMatch = raw.match(/^title:\s*(.+)$/m);
+      var descMatch = raw.match(/^description:\s*(.+)$/m);
+      var kwMatch = raw.match(/^keywords:\s*(.+)$/m);
+      if (titleMatch) document.getElementById('pageTitle').textContent = titleMatch[1].trim() + ' · STRIKEBASE';
+      if (descMatch) document.getElementById('pageDesc').setAttribute('content', descMatch[1].trim());
+      if (kwMatch) document.getElementById('pageKeywords').setAttribute('content', kwMatch[1].trim());
+    })
+    .catch(function() {});
+})();
+</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto;}
+  *{animation-duration:0.01ms!important;animation-iteration-count:1!important;transition-duration:0.01ms!important;}
+}
+body{background:#020203;color:#FAFAF5;font-family:'Inter',sans-serif;overflow-x:hidden;}
+
+.progress-bar{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,#D4541A,#FF8A3D);z-index:1000;transition:width .1s linear;width:0%;}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.25rem 2rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(12px);background:rgba(2,2,3,0.4);}
+.nav-logo{font-size:18px;font-weight:800;letter-spacing:-0.02em;color:#FAFAF5;text-decoration:none;}
+.nav-logo span{color:#FF8A3D;}
+.nav-links{display:flex;align-items:center;gap:28px;}
+.nav-link{font-size:12px;font-weight:500;color:rgba(255,255,255,0.6);text-decoration:none;transition:color .2s;}
+.nav-link:hover{color:#FAFAF5;}
+.nav-link.active{color:#FF8A3D;}
+.nav-cta{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#FAFAF5;padding:8px 18px;border-radius:100px;font-size:12px;font-weight:600;letter-spacing:0.02em;text-decoration:none;transition:all .25s;}
+.nav-cta:hover{background:#D4541A;border-color:#D4541A;}
+
+.grain{position:absolute;inset:0;opacity:0.04;mix-blend-mode:overlay;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23n)'/%3E%3C/svg%3E");}
+.orb{position:absolute;border-radius:50%;filter:blur(70px);opacity:0.75;}
+
+.post-hero{padding:7.5rem 2rem 3.5rem;text-align:center;position:relative;overflow:hidden;}
+.hero-orb1{width:480px;height:480px;background:radial-gradient(circle,#FF6B1A 0%,#D4541A 45%,transparent 75%);top:-180px;left:50%;transform:translateX(-50%);}
+.post-hero-cat{font-family:'Inter',sans-serif;font-size:11px;letter-spacing:0.2em;color:#FF8A3D;margin-bottom:1rem;display:block;text-transform:uppercase;position:relative;z-index:5;font-weight:600;}
+.post-hero-title{font-size:clamp(30px,5.5vw,58px);font-weight:800;line-height:1.08;letter-spacing:-0.02em;margin-bottom:1.25rem;position:relative;z-index:5;}
+.post-hero-meta{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;font-size:11px;color:rgba(255,255,255,0.45);letter-spacing:0.03em;position:relative;z-index:5;}
+.meta-dot{width:3px;height:3px;border-radius:50%;background:#FF8A3D;}
+
+.article-wrap{max-width:680px;margin:0 auto;padding:2.5rem 2rem 5rem;}
+.back-link{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:rgba(255,255,255,0.5);text-decoration:none;letter-spacing:0.03em;margin-bottom:2rem;transition:color .2s;}
+.back-link:hover{color:#FF8A3D;}
+
+.article-content h1{font-size:clamp(26px,4vw,38px);font-weight:800;margin:2.5rem 0 1rem;letter-spacing:-0.02em;line-height:1.15;}
+.article-content h2{font-size:clamp(24px,3.5vw,34px);font-weight:800;margin:2.5rem 0 1rem;letter-spacing:-0.02em;line-height:1.15;}
+.article-content h3{font-size:18px;font-weight:600;margin:1.75rem 0 .75rem;}
+.article-content p{font-size:15.5px;color:rgba(255,255,255,0.75);margin-bottom:1.25rem;line-height:1.85;font-weight:300;}
+.article-content strong{font-weight:600;color:#FAFAF5;}
+.article-content em{font-style:italic;color:rgba(255,255,255,0.55);}
+.article-content ul,.article-content ol{margin:0 0 1.25rem 1.25rem;font-size:15.5px;color:rgba(255,255,255,0.75);font-weight:300;}
+.article-content li{margin-bottom:.5rem;}
+.article-content a{color:#FF8A3D;text-decoration:underline;}
+.article-content blockquote{border-left:3px solid #FF8A3D;background:rgba(255,255,255,0.04);padding:1.1rem 1.5rem;border-radius:0 12px 12px 0;margin:1.75rem 0;font-style:italic;color:rgba(255,255,255,0.65);}
+.article-content img{width:100%;border-radius:12px;margin:1.5rem 0;}
+.article-content code{background:rgba(255,255,255,0.08);padding:2px 6px;border-radius:4px;font-family:monospace;font-size:13px;}
+.article-content hr{border:none;border-top:1px solid rgba(255,255,255,0.1);margin:2rem 0;}
+
+.stat-block{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin:2rem 0;}
+.stat-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:1.25rem;text-align:center;}
+.stat-num{font-size:38px;font-weight:800;color:#FF8A3D;line-height:1;letter-spacing:-0.02em;}
+.stat-lbl{font-size:12px;color:rgba(255,255,255,0.5);margin-top:6px;font-weight:300;}
+
+.callout{background:rgba(255,138,61,0.08);border-left:3px solid #FF8A3D;padding:1.25rem 1.5rem;border-radius:0 14px 14px 0;margin:2rem 0;}
+.callout-tag{font-size:9px;letter-spacing:0.15em;color:#FF8A3D;margin-bottom:6px;text-transform:uppercase;font-weight:700;}
+.callout p{margin-bottom:0;font-size:14px;}
+
+.mid-cta{background:linear-gradient(135deg,rgba(212,84,26,0.18),rgba(2,2,3,0.95));border:1px solid rgba(255,138,61,0.25);border-radius:20px;padding:2rem;text-align:center;margin:3rem 0;position:relative;overflow:hidden;}
+.mid-cta-tag{font-size:9px;letter-spacing:0.18em;color:#FF8A3D;margin-bottom:8px;text-transform:uppercase;font-weight:700;position:relative;z-index:5;}
+.mid-cta-title{font-size:26px;font-weight:800;letter-spacing:-0.02em;margin-bottom:8px;position:relative;z-index:5;}
+.mid-cta-sub{font-size:13px;color:rgba(255,255,255,0.6);margin-bottom:1.25rem;font-weight:300;position:relative;z-index:5;}
+.mid-cta-btn{display:inline-block;background:#FAFAF5;color:#020203;padding:12px 28px;border-radius:100px;font-size:12px;font-weight:700;letter-spacing:0.03em;text-decoration:none;position:relative;z-index:5;transition:background .2s;}
+.mid-cta-btn:hover{background:#FFA559;}
+
+.share-bar{display:flex;gap:10px;justify-content:center;margin:3rem 0;flex-wrap:wrap;}
+.share-btn{font-size:11px;padding:9px 18px;border:1px solid rgba(255,255,255,0.15);border-radius:100px;background:rgba(255,255,255,0.03);color:#FAFAF5;text-decoration:none;letter-spacing:0.05em;cursor:pointer;transition:all .2s;}
+.share-btn:hover{border-color:rgba(255,138,61,0.4);color:#FF8A3D;}
+
+.back-link-bottom{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:rgba(255,255,255,0.5);text-decoration:none;letter-spacing:0.03em;margin-top:1rem;}
+.back-link-bottom:hover{color:#FF8A3D;}
+
+.loading-state,.error-state{text-align:center;padding:5rem 2rem;color:rgba(255,255,255,0.4);}
+.error-state-title{font-size:30px;font-weight:800;color:#FAFAF5;margin-bottom:1rem;letter-spacing:-0.02em;}
+
+footer{padding:3rem 2rem;text-align:center;border-top:1px solid rgba(255,255,255,0.06);}
+.footer-logo{font-size:16px;font-weight:800;letter-spacing:-0.02em;}
+.footer-logo span{color:#FF8A3D;}
+.footer-sub{font-size:10px;letter-spacing:0.15em;color:rgba(255,255,255,0.3);margin-top:6px;text-transform:uppercase;}
+.footer-links{display:flex;gap:20px;justify-content:center;margin-top:1.25rem;flex-wrap:wrap;}
+.footer-links a{font-size:12px;color:rgba(255,255,255,0.4);text-decoration:none;}
+.footer-links a:hover{color:#FAFAF5;}
+
+@media(max-width:600px){
+  nav{padding:1rem 1.25rem;}
+  .nav-links{gap:14px;}
+  .nav-link{display:none;}
+  .article-wrap{padding:2rem 1.25rem 4rem;}
+  .post-hero{padding:6.5rem 1.25rem 3rem;}
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<nav>
+  <a href="/" class="nav-logo">STRIKE<span>BASE</span></a>
+  <div class="nav-links">
+    <a href="/sobre-mi.html" class="nav-link">Sobre mí</a>
+    <a href="/blog.html" class="nav-link active">Blog</a>
+    <a href="/plantillas.html" class="nav-link">Plantillas</a>
+    <a href="/app" class="nav-cta">ENTRAR A LA APP</a>
+  </div>
+</nav>
+
+<div id="postHero" class="post-hero">
+  <div class="orb hero-orb1"></div>
+  <div class="grain"></div>
+  <div class="loading-state" style="position:relative;z-index:5;">Cargando artículo...</div>
+</div>
+
+<div class="article-wrap">
+  <a href="/blog.html" class="back-link">← Volver al blog</a>
+  <div class="article-content" id="articleContent"></div>
+
+  <div class="mid-cta">
+    <div class="grain"></div>
+    <div class="mid-cta-tag">// Siguiente paso</div>
+    <div class="mid-cta-title">Usa STRIKEBASE hoy</div>
+    <div class="mid-cta-sub">Registra tus hábitos, recibe análisis personalizado y construye la disciplina que buscas.</div>
+    <a href="/app" class="mid-cta-btn">PROBAR LA APP →</a>
+  </div>
+
+  <div class="share-bar">
+    <a class="share-btn" id="shareWhatsapp" href="#" target="_blank">COMPARTIR EN WHATSAPP</a>
+    <button class="share-btn" onclick="copyLink()">COPIAR LINK</button>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-logo">STRIKE<span>BASE</span></div>
+  <div class="footer-sub">Sistema de vida personalizado</div>
+  <div class="footer-links">
+    <a href="/sobre-mi.html">Sobre mí</a>
+    <a href="/blog.html">Blog</a>
+    <a href="/plantillas.html">Plantillas</a>
+    <a href="/app">App</a>
+    <a href="/privacidad.html">Privacidad</a>
+    <a href="/cookies.html">Cookies</a>
+    <a href="/aviso-legal.html">Aviso Legal</a>
+    <a href="mailto:contacto@strikebase.net.pe">Contacto</a>
+  </div>
+</footer>
+
+<script>
+const GH_USER = 'FMontesStrikeBase';
+const GH_REPO = 'strikebase';
+const GH_BRANCH = 'main';
+const POSTS_PATH = '_posts';
+
+const CAT_LABELS = {
+  productividad: 'Productividad',
+  salud: 'Salud y Bienestar',
+  finanzas: 'Hábitos Financieros',
+  disciplina: 'Disciplina Mental',
+  rutinas: 'Rutinas'
+};
+
+function parseFrontmatter(raw){
+  const match = raw.match(/^---\s*\n([\s\S]*?)\n---\s*\n([\s\S]*)$/);
+  if(!match) return null;
+  const fmText = match[1];
+  const body = match[2];
+  const lines = fmText.split('\n');
+  const fm = {};
+  let i = 0;
+  while(i < lines.length){
+    const line = lines[i];
+    const topMatch = line.match(/^(\w+):\s*(.*)$/);
+    if(!topMatch){ i++; continue; }
+    const key = topMatch[1];
+    const rest = topMatch[2].trim();
+    if(rest !== ''){
+      let value = rest;
+      let j = i + 1;
+      while(j < lines.length && /^\s{2,}\S/.test(lines[j]) && !/^\s{2,}-\s/.test(lines[j]) && !/^\s{2,}\w+:\s/.test(lines[j])){
+        value += ' ' + lines[j].trim();
+        j++;
+      }
+      fm[key] = value.replace(/^["']|["']$/g,'').replace(/["']$/,'');
+      i = j;
+    } else {
+      const items = [];
+      i++;
+      while(i < lines.length && /^\s*-\s/.test(lines[i])){
+        const item = {};
+        const firstLine = lines[i].replace(/^\s*-\s*/, '');
+        const firstField = firstLine.match(/^(\w+):\s*(.*)$/);
+        if(firstField){
+          item[firstField[1]] = firstField[2].trim().replace(/^["']|["']$/g,'');
+        }
+        i++;
+        while(i < lines.length && /^\s{2,}\w+:/.test(lines[i])){
+          const f = lines[i].trim().match(/^(\w+):\s*(.*)$/);
+          if(f) item[f[1]] = f[2].trim().replace(/^["']|["']$/g,'');
+          i++;
+        }
+        items.push(item);
+      }
+      fm[key] = items;
+    }
+  }
+  return {...fm, body};
+}
+
+function markdownToHtml(md){
+  let html = md;
+  html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+  html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+  html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
+  html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+  html = html.replace(/!\[(.*?)\]\((.*?)\)/g, '<img src="$2" alt="$1"/>');
+  html = html.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>');
+  html = html.replace(/^> (.*$)/gim, '<blockquote>$1</blockquote>');
+  html = html.replace(/^---$/gim, '<hr/>');
+  html = html.replace(/^\s*-\s+(.*$)/gim, '<li>$1</li>');
+  html = html.replace(/(<li>.*<\/li>\n?)+/g, m => '<ul>'+m+'</ul>');
+  html = html.split(/\n\n+/).map(block=>{
+    const trimmed = block.trim();
+    if(!trimmed) return '';
+    if(/^<(h1|h2|h3|ul|ol|li|blockquote|img|hr)/.test(trimmed)) return trimmed;
+    return `<p>${trimmed.replace(/\n/g,' ')}</p>`;
+  }).join('\n');
+  return html;
+}
+
+function buildStatBlock(stats){
+  if(!stats || !stats.length) return '';
+  const cards = stats.map(s=>`<div class="stat-card"><div class="stat-num">${s.number||''}</div><div class="stat-lbl">${s.label||''}</div></div>`).join('');
+  return `<div class="stat-block">${cards}</div>`;
+}
+
+function buildCallouts(callouts){
+  if(!callouts || !callouts.length) return [];
+  return callouts.map(c=>`<div class="callout"><div class="callout-tag">// ${c.tag||'DATO'}</div><p>${c.text||''}</p></div>`);
+}
+
+function insertVisualBlocks(html, statsHtml, calloutsHtml){
+  const blocks = html.split(/\n(?=<)/).filter(b=>b.trim());
+  const paragraphIdxs = [];
+  blocks.forEach((b,idx)=>{ if(b.trim().startsWith('<p>')) paragraphIdxs.push(idx); });
+
+  if(statsHtml && paragraphIdxs.length>0){
+    blocks.splice(paragraphIdxs[0]+1, 0, statsHtml);
+  }
+  if(calloutsHtml.length){
+    const updatedParaIdxs = [];
+    blocks.forEach((b,idx)=>{ if(b.trim().startsWith('<p>')) updatedParaIdxs.push(idx); });
+    let insertedOffset = 0;
+    calloutsHtml.forEach((calloutHtml, i)=>{
+      const targetParaPos = 1 + i*2;
+      if(updatedParaIdxs[targetParaPos] !== undefined){
+        const insertAt = updatedParaIdxs[targetParaPos] + 1 + insertedOffset;
+        blocks.splice(insertAt, 0, calloutHtml);
+        insertedOffset++;
+      } else {
+        blocks.push(calloutHtml);
+      }
+    });
+  }
+  return blocks.join('\n');
+}
+
+function getSlug(){
+  const params = new URLSearchParams(window.location.search);
+  return params.get('slug');
+}
+
+async function loadPost(){
+  const slug = getSlug();
+  const heroEl = document.getElementById('postHero');
+  const contentEl = document.getElementById('articleContent');
+
+  if(!slug){
+    heroEl.innerHTML = `<div class="orb hero-orb1"></div><div class="grain"></div><div class="error-state" style="position:relative;z-index:5;"><div class="error-state-title">ARTÍCULO NO ENCONTRADO</div><p>No se especificó qué artículo cargar.</p></div>`;
+    return;
+  }
+
+  try{
+    const url = `https://raw.githubusercontent.com/${GH_USER}/${GH_REPO}/${GH_BRANCH}/${POSTS_PATH}/${slug}.md`;
+    const res = await fetch(url);
+    if(!res.ok) throw new Error('Artículo no encontrado');
+    const raw = await res.text();
+    const fm = parseFrontmatter(raw);
+    if(!fm) throw new Error('Formato inválido');
+
+    document.getElementById('pageTitle').textContent = `${fm.title} · STRIKEBASE`;
+    document.getElementById('pageDesc').setAttribute('content', fm.description||'');
+    document.getElementById('pageKeywords').setAttribute('content', fm.keywords||'');
+
+    const dateObj = fm.date ? new Date(fm.date) : null;
+    const dateStr = dateObj ? dateObj.toLocaleDateString('es-PE',{day:'numeric',month:'long',year:'numeric'}) : '';
+
+    heroEl.innerHTML = `
+      <div class="orb hero-orb1"></div>
+      <div class="grain"></div>
+      <span class="post-hero-cat">${CAT_LABELS[fm.category]||fm.category||''}</span>
+      <h1 class="post-hero-title">${fm.title}</h1>
+      <div class="post-hero-meta">
+        <span>STRIKEBASE</span><span class="meta-dot"></span>
+        <span>${dateStr}</span><span class="meta-dot"></span>
+        <span>${fm.readtime||5} min de lectura</span>
+      </div>`;
+
+    contentEl.innerHTML = insertVisualBlocks(
+      markdownToHtml(fm.body||''),
+      buildStatBlock(fm.stats),
+      buildCallouts(fm.callouts)
+    );
+
+    document.getElementById('shareWhatsapp').href = `https://wa.me/?text=${encodeURIComponent(fm.title+' — '+window.location.href)}`;
+  }catch(e){
+    heroEl.innerHTML = `<div class="orb hero-orb1"></div><div class="grain"></div><div class="error-state" style="position:relative;z-index:5;"><div class="error-state-title">ARTÍCULO NO ENCONTRADO</div><p>Puede que el link sea incorrecto o el artículo fue eliminado.</p></div>`;
+  }
+}
+
+function copyLink(){
+  navigator.clipboard.writeText(window.location.href);
+  const btn = event.target;
+  const original = btn.textContent;
+  btn.textContent = '✓ LINK COPIADO';
+  setTimeout(()=>btn.textContent=original, 2000);
+}
+
+window.addEventListener('scroll', ()=>{
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const pct = (scrollTop/docHeight)*100;
+  document.getElementById('progressBar').style.width = pct+'%';
+});
+
+loadPost();
+</script>
+</body>
+</html>
