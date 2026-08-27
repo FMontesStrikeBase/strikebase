@@ -1,0 +1,1610 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="description" content="STRIKEBASE — Tu sistema de hábitos con inteligencia artificial."/>
+<meta name="theme-color" content="#1A1A12"/>
+<title>STRIKEBASE · Sistema de Hábitos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --ink:#020203;--paper:#020203;--paper-dim:rgba(255,255,255,0.045);--white:#FAFAF5;
+  --surface:rgba(255,255,255,0.045);--text:#FAFAF5;
+  --olive:#B8461A;--sand:#E8E6E0;--sand-light:#F0EEE8;--sand-dim:rgba(255,255,255,0.55);
+  --accent:#FF8A3D;--accent-dim:#D4541A;--muted:rgba(255,255,255,0.5);--border:rgba(255,255,255,0.08);--border-strong:rgba(255,255,255,0.18);
+  --success:#5DCAA5;--success-bg:rgba(93,202,165,0.12);
+  --warning:#E8A23D;--warning-bg:rgba(232,162,61,0.12);
+  --danger:#D9524A;--danger-bg:rgba(217,82,74,0.12);
+  --mono:'JetBrains Mono',monospace;
+}
+html{scroll-behavior:smooth;}
+body{background:var(--paper);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased;}
+input,select,button{font-family:'Inter',sans-serif;}
+input[type="number"]::-webkit-inner-spin-button{-webkit-appearance:none;}
+
+/* ── LOADING SCREEN ── */
+#loadingScreen{position:fixed;inset:0;background:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;}
+#loadingScreen.hidden{display:none;}
+.load-logo{font-family:'Inter',sans-serif;letter-spacing:.06em;font-size:32px;font-weight:700;color:var(--white);letter-spacing:-1px;margin-bottom:12px;}
+.load-logo span{color:var(--accent);}
+.load-sub{font-family:'Inter',sans-serif;letter-spacing:.06em;font-size:9px;letter-spacing:.2em;color:var(--sand-dim);margin-bottom:2rem;}
+.load-dots{display:flex;gap:6px;}
+.load-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:blink 1.2s ease-in-out infinite;}
+.load-dot:nth-child(2){animation-delay:.2s;}.load-dot:nth-child(3){animation-delay:.4s;}
+
+/* ── AUTH SCREEN ── */
+#authScreen{display:none;background:var(--ink);min-height:100vh;padding:2rem 1.5rem;flex-direction:column;align-items:center;justify-content:center;}
+#authScreen.active{display:flex;}
+.auth-logo{font-family:'Inter',sans-serif;letter-spacing:.06em;font-size:36px;font-weight:700;color:var(--white);letter-spacing:-1px;margin-bottom:6px;}
+.auth-logo span{color:var(--accent);}
+.auth-sub{font-family:'Inter',sans-serif;letter-spacing:.06em;font-size:9px;letter-spacing:.2em;color:var(--sand-dim);margin-bottom:2.5rem;}
+.auth-card{width:100%;max-width:360px;background:rgba(255,255,255,0.04);border:0.5px solid rgba(200,192,154,0.2);border-radius:12px;padding:1.75rem;}
+.auth-tabs{display:flex;gap:0;margin-bottom:1.5rem;border:0.5px solid rgba(200,192,154,0.2);border-radius:8px;overflow:hidden;}
+.auth-tab{flex:1;padding:10px;font-family:'Inter',sans-serif;letter-spacing:.06em;font-size:10px;font-weight:700;letter-spacing:.1em;background:transparent;border:none;color:var(--sand-dim);cursor:pointer;transition:all .15s;}
+.auth-tab.on{background:var(--accent);color:var(--white);}
+.auth-inp{width:100%;background:rgba(255,255,255,0.05);border:0.5px solid rgba(200,192,154,0.25);border-radius:8px;padding:12px 14px;font-size:14px;color:var(--white);margin-bottom:10px;outline:none;transition:border-color .2s;}
+.auth-inp::placeholder{color:var(--muted);}
+.auth-inp:focus{border-color:rgba(200,192,154,0.5);}
+.auth-btn{width:100%;padding:14px;background:var(--accent);color:var(--white);border:none;border-radius:8px;font-family:'Inter',sans-serif;letter-spacing:.06em;font-size:11px;font-weight:700;letter-spacing:.12em;cursor:pointer;margin-top:6px;transition:filter .15s;}
+.auth-btn:hover{filter:brightness(1.1);}
+.auth-btn:disabled{opacity:.4;cursor:not-allowed;}
+.auth-error{font-size:12px;color:#F09595;margin-top:8px;text-align:center;min-height:18px;}
+.auth-divider{display:flex;align-items:center;gap:10px;margin:14px 0;}
+.auth-divider-line{flex:1;height:0.5px;background:rgba(200,192,154,0.2);}
+.auth-divider-text{font-size:11px;color:var(--muted);white-space:nowrap;}
+.google-btn{width:100%;padding:13px;background:#FAFAF5;color:#1A1A12;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:opacity .15s;}
+.google-btn:hover{opacity:.9;}
+.google-btn:disabled{opacity:.4;cursor:not-allowed;}
+.toast{position:fixed;top:0;left:0;right:0;z-index:999;display:flex;justify-content:center;pointer-events:none;}
+.toast-inner{background:var(--success);color:var(--white);font-family:'Inter',sans-serif;letter-spacing:.06em;font-size:11px;font-weight:700;letter-spacing:.1em;padding:12px 24px;border-radius:0 0 10px 10px;transform:translateY(-100%);transition:transform .35s cubic-bezier(.34,1.56,.64,1);box-shadow:0 4px 20px rgba(0,0,0,.2);}
+.toast.show .toast-inner{transform:translateY(0);}
+.sb-modal{position:fixed;inset:0;z-index:998;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.6);}
+.sb-modal.on{display:flex;}
+.sb-modal-card{width:100%;max-width:480px;max-height:85vh;overflow-y:auto;background:var(--ink);border-radius:16px 16px 0 0;padding:20px;}
+.sb-modal-tag{font-size:10px;letter-spacing:.08em;color:var(--accent);margin-bottom:6px;}
+.sb-modal-title{font-size:15px;font-weight:700;color:var(--white);margin-bottom:12px;}
+
+/* ── ONBOARDING ── */
+#ob{display:none;background:var(--ink);min-height:100vh;color:var(--sand-light);}
+#ob.active{display:block;}
+.ob-step{display:none;padding:2rem 1.5rem;min-height:100vh;flex-direction:column;}
+.ob-step.active{display:flex;}
+.ob-prog{display:flex;gap:5px;margin-bottom:2.5rem;}
+.ob-prog div{height:3px;flex:1;border-radius:2px;background:rgba(200,192,154,0.15);transition:background .3s;}
+.ob-prog div.done{background:var(--accent);}
+.ob-prog div.cur{background:var(--sand);}
+.ob-tag{font-family:'Inter',sans-serif;letter-spacing:.06em;font-size:9px;color:var(--accent);letter-spacing:.18em;margin-bottom:.75rem;}
+.ob-title{font-size:24px;font-weight:700;color:var(--white);line-height:1.2;margin-bottom:.75rem;}
+.ob-sub{font-size:13px;color:var(--sand-dim);line-height:1.65;margin-bottom:1.5rem;font-weight:300;}
+.ob-inp{width:100%;background:rgba(255,255,255,0.05);border:0.5px solid rgba(200,192,154,0.25);border-radius:8px;padding:12px 14px;font-size:14px;color:var(--white);margin-bottom:10px;outline:none;}
+.ob-inp::placeholder{color:var(--muted);}
+.ob-inp:focus{border-color:rgba(200,192,154,0.5);}
+.ob-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.ob-sel{width:100%;background:rgba(255,255,255,0.05);border:0.5px solid rgba(200,192,154,0.25);border-radius:8px;padding:12px 14px;font-size:13px;color:var(--white);outline:none;}
+.ob-sel option{background:#2A2A1A;}
+.ob-chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:1.5rem;}
+.ob-chip{padding:7px 13px;border:0.5px solid rgba(200,192,154,0.2);border-radius:999px;font-size:12px;color:var(--sand);cursor:pointer;transition:all .15s;user-select:none;}
+.ob-chip.sel{background:var(--accent);border-color:var(--accent);color:var(--white);font-weight:500;}
+.ob-btn{margin-top:auto;width:100%;padding:15px;background:var(--accent);color:var(--white);border:none;border-radius:8px;font-family:'Inter',sans-serif;letter-spacing:.06em;font-size:11px;font-weight:700;letter-spacing:.12em;cursor:pointer;}
+.ob-btn:disabled{opacity:.35;cursor:not-allowed;}
+.ob-ghost{margin-top:10px;width:100%;padding:13px;background:transparent;color:var(--muted);border:0.5px solid rgba(200,192,154,0.12);border-radius:8px;font-size:13px;cursor:pointer;}
+
+/* ── MAIN APP ── */
+#app{display:none;background:var(--paper);min-height:100vh;}
+#app.active{display:block;}
+.app-hdr{background:var(--ink);padding:1.1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:20;}
+.app-logo{font-family:'Inter',sans-serif;letter-spacing:.06em;font-size:17px;font-weight:700;color:var(--white);}
+.app-logo span{color:var(--accent);}
+.hdr-right{display:flex;align-items:center;gap:12px;}
+.hdr-name{font-family:'Inter',sans-serif;letter-spacing:.06em;font-size:10px;color:var(--sand-dim);letter-spacing:.06em;}
+.logout-btn{font-family:'Inter',sans-serif;letter-spacing:.06em;font-size:9px;color:var(--muted);background:none;border:0.5px solid rgba(200,192,154,0.15);border-radius:6px;padding:5px 9px;cursor:pointer;letter-spacing:.08em;}
+.logout-btn:hover{color:var(--sand-dim);}
+.nav{display:flex;background:var(--surface);border-bottom:1px solid var(--border);overflow-x:auto;}
+.nav::-webkit-scrollbar{display:none;}
+.nav button{flex:1;min-width:58px;padding:11px 4px;font-size:10px;font-weight:600;font-family:'Inter',sans-serif;letter-spacing:.06em;letter-spacing:.06em;color:var(--muted);border:none;background:transparent;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;text-transform:uppercase;white-space:nowrap;}
+.nav button.on{color:var(--accent);border-bottom-color:var(--accent);}
+.tab{display:none;padding:1.25rem 1.5rem 6rem;}
+.tab.on{display:block;}
+
+/* SAVE INDICATOR */
+.save-indicator{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--ink);color:var(--sand-light);font-family:'Inter',sans-serif;letter-spacing:.06em;font-size:10px;padding:8px 14px;border-radius:999px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:50;}
+.save-indicator.show{opacity:1;}
+
+/* TODAY */
+.copilot-card{background:var(--ink);border-radius:12px;padding:1.25rem;margin-bottom:1.5rem;}
+.copilot-tag{font-family:'Inter',sans-serif;letter-spacing:.06em;font-size:9px;color:var(--accent);letter-spacing:.18em;margin-bottom:6px;}
+.copilot-greeting{font-size:16px;font-weight:600;color:var(--white);margin-bottom:10px;line-height:1.35;}
+.copilot-line{display:flex;align-items:center;gap:16px;}
+.copilot-pct{font-family:var(--mono);font-size:34px;font-weight:700;color:var(--white);line-height:1;flex-shrink:0;letter-spacing:-0.02em;}
+.copilot-meta{font-size:10px;color:var(--sand-dim);margin-top:2px;}
+.prog-bar{height:3px;background:rgba(255,255,255,0.1);border-radius:2px;overflow:hidden;flex:1;}
+.prog-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .4s ease;}
+.sec-tag{font-family:'Inter',sans-serif;letter-spacing:.06em;font-size:9px;letter-spacing:.15em;color:var(--muted);text-transform:uppercase;margin-bottom:10px;}
+.habits-list{display:flex;flex-direction:column;gap:8px;margin-bottom:1.25rem;}
+.hcard{display:flex;align-items:center;gap:11px;background:var(--surface);border:0.5px solid var(--border);border-radius:10px;padding:12px 13px;cursor:pointer;transition:all .15s;user-select:none;}
+.hcard:hover{border-color:var(--border-strong);}
+.hcard.done{background:var(--success-bg);border-color:rgba(74,107,44,0.28);}
+.hbox{width:21px;height:21px;border:1.5px solid var(--border-strong);border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;}
+.hcard.done .hbox{background:var(--success);border-color:var(--success);}
+.chk{display:none;}
+.hcard.done .chk{display:block;}
+.htitle{font-size:14px;font-weight:500;color:var(--text);}
+.hcard.done .htitle{color:var(--success);}
+.hmeta{font-size:11px;color:var(--muted);margin-top:2px;}
+.hcard.done .hmeta{color:#4A6B2C;opacity:.7;}
+.hstreak{font-family:'Inter',sans-serif;letter-spacing:.06em;font-size:11px;color:var(--muted);white-space:nowrap;}
+.hcard.done .hstreak{color:var(--success);}
+.hdelete{width:22px;height:22px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;border-radius:4px;flex-shrink:0;opacity:0;transition:opacity .15s;}
+.hcard:hover .hdelete{opacity:1;}
+.hdelete:hover{color:#E24B4A;}
+.add-form{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.25rem;}
+.add-form input,.add-form select{background:var(--surface);border:0.5px solid var(--border-strong);border-radius:8px;padding:9px 11px;font-size:13px;color:var(--text);outline:none;}
+.add-form input{flex:1;min-width:120px;}
+.add-form select{width:115px;}
+.btn-add{padding:9px 14px;background:var(--ink);color:var(--white);border:none;border-radius:8px;font-family:'Inter',sans-serif;letter-spacing:.06em;font-size:10px;font-weight:700;letter-spacing:.1em;cursor:pointer;white-space:nowrap;}
+.btn-add:hover{background:var(--olive);}
+
+/* HISTORIAL */
+.month-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;}
+.month-lbl{font-family:'Inter',sans-serif;letter-spacing:.06em;font-size:13px;font-weight:700;color:var(--text);}
+.month-btn{width:32px;height:32px;background:var(--surface);border:0.5px solid var(--border-strong);border-radius:6px;cursor:pointer;font-size:14px;color:var(--text);display:flex;align-items:center;justify-content:center;}
+.sum-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:1.25rem;}
+.sum-card{text-align:center;padding:12px 8px;background:var(--surface);border:0.5px solid var(--border);border-radius:8px;}
+.sum-val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--text);}
+.sum-lbl{font-size:10px;color:var(--muted);margin-top:3px;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:1.25rem;}
+.cal-dn{text-align:center;font-family:'Inter',sans-serif;letter-spacing:.06em;font-size:9px;color:var(--muted);padding:3px 0 7px;}
+.cal-d{aspect-ratio:1;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;border:0.5px solid transparent;}
+.cal-d.empty,.cal-d.future{background:transparent;color:var(--muted);opacity:.35;}
+.cal-d.none{background:var(--surface);color:var(--muted);}
+.cal-d.low{background:#D4E8C8;color:#2A4A15;}
+.cal-d.mid{background:#A8D090;color:#1E3D0A;}
+.cal-d.high{background:#5A9A30;color:#F0F8E8;}
+.cal-d.perfect{background:var(--success);color:var(--white);}
+.cal-d.today-d{border:1.5px solid var(--accent)!important;}
+.cal-legend{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:1.25rem;}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--muted);}
+.leg-dot{width:9px;height:9px;border-radius:3px;}
+
+/* PERFIL */
+.profile-avatar{width:60px;height:60px;background:rgba(212,84,26,0.12);border:0.5px solid rgba(212,84,26,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;letter-spacing:.06em;font-size:22px;font-weight:700;color:var(--accent);}
+.profile-card{background:var(--surface);border:0.5px solid var(--border);border-radius:10px;padding:1.25rem;margin-bottom:1rem;}
+.profile-hdr{font-family:'Inter',sans-serif;letter-spacing:.06em;font-size:9px;color:var(--accent);letter-spacing:.15em;margin-bottom:14px;}
+.profile-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.pf-label{font-size:10px;color:var(--muted);font-family:'Inter',sans-serif;letter-spacing:.06em;letter-spacing:.08em;display:block;margin-bottom:5px;}
+.pf-inp{width:100%;background:var(--surface);border:0.5px solid var(--border-strong);border-radius:7px;padding:9px 11px;font-size:13px;color:var(--text);outline:none;}
+.pf-full{margin-bottom:10px;}
+.int-chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:5px;}
+.int-chip{padding:6px 12px;border:0.5px solid var(--border-strong);border-radius:999px;font-size:12px;color:var(--muted);cursor:pointer;transition:all .15s;user-select:none;}
+.int-chip.sel{background:var(--ink);border-color:var(--text);color:var(--white);}
+.save-btn{width:100%;padding:13px;background:var(--ink);color:var(--white);border:none;border-radius:8px;font-family:'Inter',sans-serif;letter-spacing:.06em;font-size:10px;font-weight:700;letter-spacing:.12em;cursor:pointer;margin-top:6px;}
+
+/* ── MOOD CHECK-IN ── */
+
+/* ── MOTIVATIONAL QUOTE ── */
+.quote-card{background:var(--ink);border-radius:10px;padding:1.25rem;margin-bottom:1.25rem;position:relative;overflow:hidden;}
+.quote-tag{font-family:'Inter',sans-serif;letter-spacing:.06em;font-size:9px;color:var(--accent);letter-spacing:.18em;margin-bottom:8px;}
+.quote-text{font-size:14px;color:var(--sand-light);line-height:1.65;font-style:italic;}
+.quote-accent{position:absolute;top:-10px;right:12px;font-size:80px;color:rgba(212,84,26,0.08);font-family:'Inter',sans-serif;letter-spacing:.06em;line-height:1;pointer-events:none;}
+
+/* ── STREAK BANNER: tarjeta con glow de estado + tipografía instrumento ── */
+.streak-banner{position:relative;overflow:hidden;display:flex;align-items:center;gap:14px;background:var(--ink);border:0.5px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:1.25rem;}
+.streak-banner::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 15% 30%,var(--glow-color,var(--accent)) 0%,transparent 65%);opacity:.16;pointer-events:none;}
+.streak-fire{font-size:22px;line-height:1;position:relative;z-index:1;}
+.streak-val{font-family:var(--mono);font-size:28px;font-weight:700;color:var(--white);line-height:1;position:relative;z-index:1;letter-spacing:-0.02em;}
+.streak-lbl{font-size:10px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.08em;position:relative;z-index:1;}
+.streak-best{margin-left:auto;text-align:right;position:relative;z-index:1;}
+.streak-best-val{font-family:var(--mono);font-size:16px;font-weight:700;color:var(--sand-light);line-height:1;}
+.streak-best-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:3px;}
+
+/* ── STATS RADAR TAB ── */
+.stats-radar-wrap{background:var(--surface);border:0.5px solid var(--border);border-radius:10px;padding:1.25rem;margin-bottom:1.25rem;display:flex;flex-direction:column;align-items:center;}
+.radar-title{font-family:'Inter',sans-serif;letter-spacing:.06em;font-size:9px;color:var(--accent);letter-spacing:.15em;margin-bottom:1rem;align-self:flex-start;}
+.stats-cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:1.25rem;}
+.stat-cat-card{background:var(--surface);border:0.5px solid var(--border);border-radius:8px;padding:12px;}
+.stat-cat-name{font-family:'Inter',sans-serif;letter-spacing:.06em;font-size:9px;color:var(--muted);letter-spacing:.1em;margin-bottom:6px;}
+.stat-cat-val{font-family:'Inter',sans-serif;letter-spacing:.06em;font-size:22px;font-weight:700;color:var(--text);}
+.stat-cat-bar{height:3px;background:var(--surface);border-radius:2px;margin-top:6px;overflow:hidden;}
+.stat-cat-fill{height:100%;border-radius:2px;transition:width .5s ease;}
+
+/* ── WEEKLY/MONTHLY SUMMARY ── */
+.summary-tab-btns{display:flex;gap:0;margin-bottom:1.25rem;border:0.5px solid var(--border);border-radius:8px;overflow:hidden;}
+.summary-tab-btn{flex:1;padding:9px;font-family:'Inter',sans-serif;letter-spacing:.06em;font-size:10px;font-weight:700;letter-spacing:.08em;background:transparent;border:none;color:var(--muted);cursor:pointer;transition:all .15s;}
+.summary-tab-btn.on{background:var(--ink);color:var(--white);}
+.summary-period{display:none;}
+.summary-period.on{display:block;}
+.summary-highlight{background:var(--ink);border-radius:10px;padding:1.25rem;margin-bottom:1rem;}
+.sh-tag{font-family:'Inter',sans-serif;letter-spacing:.06em;font-size:9px;color:var(--accent);letter-spacing:.18em;margin-bottom:6px;}
+.sh-val{font-family:'Inter',sans-serif;letter-spacing:.06em;font-size:36px;font-weight:700;color:var(--white);line-height:1;}
+.sh-sub{font-size:12px;color:var(--sand-dim);margin-top:4px;}
+.sh-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;}
+.sh-stat{background:rgba(255,255,255,0.06);border-radius:8px;padding:10px;}
+.sh-stat-val{font-family:'Inter',sans-serif;letter-spacing:.06em;font-size:18px;font-weight:700;color:var(--white);}
+.sh-stat-lbl{font-size:10px;color:var(--sand-dim);margin-top:2px;}
+.bar-chart{margin-bottom:1.25rem;}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.bar-day{font-family:'Inter',sans-serif;letter-spacing:.06em;font-size:9px;color:var(--muted);width:28px;flex-shrink:0;}
+.bar-track{flex:1;height:20px;background:var(--surface);border-radius:4px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:8px;transition:width .5s ease;}
+.bar-fill-text{font-family:'Inter',sans-serif;letter-spacing:.06em;font-size:9px;color:var(--white);font-weight:700;white-space:nowrap;}
+
+/* ── HABIT FREQUENCY ── */
+.freq-row{display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap;}
+.freq-chip{padding:5px 10px;border:0.5px solid var(--border-strong);border-radius:999px;font-size:11px;color:var(--muted);cursor:pointer;transition:all .15s;user-select:none;}
+.freq-chip.sel{background:var(--ink);border-color:var(--text);color:var(--white);}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loadingScreen">
+  <div class="load-logo">STRIKE<span>BASE</span></div>
+  <div class="load-sub">// CARGANDO SISTEMA //</div>
+  <div class="load-dots"><div class="load-dot"></div><div class="load-dot"></div><div class="load-dot"></div></div>
+</div>
+
+<!-- AUTH -->
+<div id="authScreen">
+  <div class="auth-logo">STRIKE<span>BASE</span></div>
+  <div class="auth-sub">// SISTEMA DE VIDA PERSONALIZADO //</div>
+  <div class="auth-card">
+    <div class="auth-tabs">
+      <button class="auth-tab on" onclick="authTab('login',this)">ENTRAR</button>
+      <button class="auth-tab" onclick="authTab('register',this)">REGISTRARSE</button>
+    </div>
+    <input class="auth-inp" id="authEmail" type="email" placeholder="Correo electrónico"/>
+    <input class="auth-inp" id="authPass" type="password" placeholder="Contraseña"/>
+    <input class="auth-inp" id="authPassConfirm" type="password" placeholder="Confirmar contraseña" style="display:none;"/>
+    <button class="auth-btn" id="authBtn" onclick="doAuth()">ENTRAR ↗</button>
+    <div class="auth-error" id="authError"></div>
+    <div class="auth-divider"><div class="auth-divider-line"></div><div class="auth-divider-text">o continúa con</div><div class="auth-divider-line"></div></div>
+    <button class="google-btn" id="googleBtn" onclick="doGoogleAuth()">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/><path d="M3.964 10.707A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.039l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.961L3.964 6.293C4.672 4.166 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>
+      Continuar con Google
+    </button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><div class="toast-inner" id="toastInner"></div></div>
+
+<!-- MODAL: Inconsistencias de ayer (Fase 4) -->
+<div class="sb-modal" id="incModal">
+  <div class="sb-modal-card">
+    <div class="sb-modal-tag">// REVISIÓN DE AYER</div>
+    <div class="sb-modal-title">¿Qué pasó con estos hábitos?</div>
+    <div id="incModalBody"></div>
+    <button class="btn-add" style="width:100%;margin-top:6px;" onclick="guardarInconsistencias()">GUARDAR Y CONTINUAR</button>
+  </div>
+</div>
+
+<!-- MODAL: Evaluación por patrón (Fase 4) -->
+<div class="sb-modal" id="evalModal">
+  <div class="sb-modal-card">
+    <div class="sb-modal-tag">// EVALUACIÓN DEL SISTEMA</div>
+    <div class="sb-modal-title" id="evalModalTitle"></div>
+    <div id="evalModalBody"></div>
+  </div>
+</div>
+
+<!-- ONBOARDING -->
+<div id="ob">
+  <div class="ob-step active" id="s0">
+    <div class="ob-prog"><div class="cur"></div><div></div><div></div><div></div><div></div></div>
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+      <div style="margin-bottom:2rem;">
+        <div style="font-family:'Inter',sans-serif;letter-spacing:.06em;font-size:38px;font-weight:700;color:var(--white);letter-spacing:-1px;">STRIKE<span style="color:var(--accent);">BASE</span></div>
+        <div style="font-family:'Inter',sans-serif;letter-spacing:.06em;font-size:9px;letter-spacing:.2em;color:var(--sand-dim);margin-top:6px;">// SISTEMA DE VIDA PERSONALIZADO //</div>
+      </div>
+      <p class="ob-title" style="font-size:20px;">Tu sistema personal de hábitos</p>
+      <p class="ob-sub">Un sistema que te conoce, analiza tu progreso y te guía cada día con inteligencia real.</p>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:2rem;">
+        <div style="display:flex;align-items:center;gap:12px;font-size:13px;color:var(--sand-dim);"><div style="width:26px;height:26px;background:rgba(212,84,26,0.12);border:0.5px solid rgba(212,84,26,0.3);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><polyline points="1,5.5 4,8.5 10,2" stroke="#D4541A" stroke-width="1.8"/></svg></div>Perfil personal para análisis empático</div>
+        <div style="display:flex;align-items:center;gap:12px;font-size:13px;color:var(--sand-dim);"><div style="width:26px;height:26px;background:rgba(212,84,26,0.12);border:0.5px solid rgba(212,84,26,0.3);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><polyline points="1,5.5 4,8.5 10,2" stroke="#D4541A" stroke-width="1.8"/></svg></div>Sistemas inteligentes para construir hábitos</div>
+        <div style="display:flex;align-items:center;gap:12px;font-size:13px;color:var(--sand-dim);"><div style="width:26px;height:26px;background:rgba(212,84,26,0.12);border:0.5px solid rgba(212,84,26,0.3);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><polyline points="1,5.5 4,8.5 10,2" stroke="#D4541A" stroke-width="1.8"/></svg></div>Feed de ciencia y datos sobre hábitos</div>
+        <div style="display:flex;align-items:center;gap:12px;font-size:13px;color:var(--sand-dim);"><div style="width:26px;height:26px;background:rgba(212,84,26,0.12);border:0.5px solid rgba(212,84,26,0.3);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><polyline points="1,5.5 4,8.5 10,2" stroke="#D4541A" stroke-width="1.8"/></svg></div>Tu briefing diario personalizado</div>
+      </div>
+    </div>
+    <button class="ob-btn" onclick="gs(1)">COMENZAR ↗</button>
+  </div>
+
+  <div class="ob-step" id="s1">
+    <div class="ob-prog"><div class="done"></div><div class="cur"></div><div></div><div></div><div></div></div>
+    <div class="ob-tag">// IDENTIFICACIÓN PERSONAL</div>
+    <p class="ob-title">Cuéntanos sobre ti</p>
+    <p class="ob-sub">Esta información hace que tu análisis sea mucho más preciso y empático.</p>
+    <input class="ob-inp" id="iName" placeholder="Tu nombre..." maxlength="30" oninput="chkS1()"/>
+    <div class="ob-row">
+      <input class="ob-inp" id="iAge" type="number" placeholder="Edad" style="margin-bottom:0;" oninput="chkS1()"/>
+      <select class="ob-sel" id="iGender"><option value="">Género</option><option>Hombre</option><option>Mujer</option><option>No binario</option><option>Prefiero no decir</option></select>
+    </div>
+    <div class="ob-row">
+      <input class="ob-inp" id="iWeight" type="number" placeholder="Peso (kg)" style="margin-bottom:0;"/>
+      <input class="ob-inp" id="iHeight" type="number" placeholder="Talla (cm)" style="margin-bottom:0;"/>
+    </div>
+    <select class="ob-sel" id="iOccup" style="margin-bottom:10px;">
+      <option value="">Ocupación...</option>
+      <option>Estudiante</option><option>Militar / Seguridad</option><option>Profesional independiente</option>
+      <option>Empleado corporativo</option><option>Emprendedor</option><option>Deportista</option>
+      <option>Docente</option><option>Artista / Creativo</option><option>Otro</option>
+    </select>
+    <div style="flex:1;"></div>
+    <button class="ob-btn" id="btnS1" onclick="gs(2)" disabled>SIGUIENTE →</button>
+    <button class="ob-ghost" onclick="gs(2)">Omitir por ahora</button>
+  </div>
+
+  <div class="ob-step" id="s2">
+    <div class="ob-prog"><div class="done"></div><div class="done"></div><div class="cur"></div><div></div><div></div></div>
+    <div class="ob-tag">// IDENTIDAD</div>
+    <p class="ob-title">¿Quién eres ahora y quién quieres llegar a ser?</p>
+    <p class="ob-sub">Esto no se analiza con IA — es tu propio punto de partida. Vuelve a leerlo cuando quieras.</p>
+    <textarea class="ob-inp" id="iEstadoActual" placeholder="Estado actual: ¿dónde estás hoy? (ej: tengo base física pero mi alimentación es desordenada)" rows="3" style="resize:none;" oninput="chkS2()"></textarea>
+    <textarea class="ob-inp" id="iVision" placeholder="Visión: ¿quién quieres llegar a ser?" rows="3" style="resize:none;" oninput="chkS2()"></textarea>
+    <p class="ob-tag" style="margin-bottom:8px;">// ÁREAS QUE QUIERES DESARROLLAR</p>
+    <div class="ob-chips" id="areaChips">
+      <div class="ob-chip" onclick="toggleArea(this)">Física</div><div class="ob-chip" onclick="toggleArea(this)">Mental</div>
+      <div class="ob-chip" onclick="toggleArea(this)">Disciplina</div><div class="ob-chip" onclick="toggleArea(this)">Productividad</div>
+      <div class="ob-chip" onclick="toggleArea(this)">Finanzas</div><div class="ob-chip" onclick="toggleArea(this)">Relaciones</div>
+    </div>
+    <div style="flex:1;"></div>
+    <button class="ob-btn" id="btnS2" onclick="goToObjetivos()" disabled>SIGUIENTE →</button>
+  </div>
+
+  <div class="ob-step" id="s3">
+    <div class="ob-prog"><div class="done"></div><div class="done"></div><div class="done"></div><div class="cur"></div><div></div></div>
+    <div class="ob-tag">// OBJETIVOS POR ÁREA</div>
+    <p class="ob-title">Un objetivo concreto por cada área elegida</p>
+    <p class="ob-sub">No tiene que ser perfecto. Lo puedes ajustar después desde tu Perfil.</p>
+    <div id="objetivosInputs"></div>
+    <div style="flex:1;"></div>
+    <button class="ob-btn" onclick="gs(4)">SIGUIENTE →</button>
+  </div>
+
+  <div class="ob-step" id="s4">
+    <div class="ob-prog"><div class="done"></div><div class="done"></div><div class="done"></div><div class="done"></div><div class="cur"></div></div>
+    <div class="ob-tag">// HÁBITOS DE PARTIDA</div>
+    <p class="ob-title">¿Qué hábitos quieres construir?</p>
+    <p class="ob-sub">Puedes agregar más después. Elige los que quieres trabajar primero.</p>
+    <div class="ob-chips" id="habitChips">
+      <div class="ob-chip" onclick="this.classList.toggle('sel')">Ejercicio</div><div class="ob-chip" onclick="this.classList.toggle('sel')">Lectura</div>
+      <div class="ob-chip" onclick="this.classList.toggle('sel')">Meditación</div><div class="ob-chip" onclick="this.classList.toggle('sel')">Agua 8 vasos</div>
+      <div class="ob-chip" onclick="this.classList.toggle('sel')">Sin redes por la mañana</div><div class="ob-chip" onclick="this.classList.toggle('sel')">Dormir 8 hrs</div>
+      <div class="ob-chip" onclick="this.classList.toggle('sel')">Journaling</div><div class="ob-chip" onclick="this.classList.toggle('sel')">Cold shower</div>
+      <div class="ob-chip" onclick="this.classList.toggle('sel')">Estudiar 1 hr</div><div class="ob-chip" onclick="this.classList.toggle('sel')">Sin alcohol</div>
+      <div class="ob-chip" onclick="this.classList.toggle('sel')">Proteína en cada comida</div><div class="ob-chip" onclick="this.classList.toggle('sel')">Caminar 10,000 pasos</div>
+    </div>
+    <div style="flex:1;"></div>
+    <button class="ob-btn" onclick="finishOnboarding()">ACTIVAR SISTEMA ↗</button>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+  <div class="app-hdr">
+    <a href="/" class="app-logo" style="text-decoration:none;">STRIKE<span>BASE</span></a>
+    <div class="hdr-right">
+      <div class="hdr-name" id="hdrName"></div>
+      <button class="logout-btn" onclick="doLogout()">SALIR</button>
+    </div>
+  </div>
+  <div class="nav">
+    <button onclick="switchTab('today',this)" class="on">HOY</button>
+    <button onclick="switchTab('stats',this)">STATS</button>
+    <button onclick="switchTab('summary',this)">RESUMEN</button>
+    <button onclick="switchTab('history',this)">HISTORIAL</button>
+    <button onclick="switchTab('profile',this)">PERFIL</button>
+  </div>
+
+  <!-- HOY -->
+  <div class="tab on" id="tab-today">
+    <!-- QUOTE OF THE DAY -->
+    <div class="quote-card" id="quoteCard">
+      <div class="quote-tag">// FRASE DEL DÍA</div>
+      <div class="quote-text" id="quoteText">Cargando tu frase del día...</div>
+      <div class="quote-accent">"</div>
+    </div>
+    <!-- STREAK -->
+    <div class="streak-banner" id="streakBanner">
+      <div style="font-size:26px;position:relative;z-index:1;">🔥</div>
+      <div><div class="streak-val" id="streakCur">0</div><div class="streak-lbl">días en racha</div></div>
+      <div class="streak-best"><div class="streak-best-val" id="streakBest">0</div><div class="streak-best-lbl">mejor racha</div></div>
+    </div>
+    <!-- COPILOT -->
+    <div class="copilot-card">
+      <div class="copilot-tag">// BRIEFING DE HOY</div>
+      <div class="copilot-greeting" id="cpGreeting">Cargando...</div>
+      <div class="copilot-line">
+        <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+        <div style="text-align:right;"><div class="copilot-pct" id="cpPct">0%</div><div class="copilot-meta">completado</div></div>
+      </div>
+    </div>
+    <div class="sec-tag">// OBJETIVOS DE HOY</div>
+    <div class="habits-list" id="hList"></div>
+    <div class="add-form">
+      <input type="text" id="newH" placeholder="Agregar hábito..."/>
+      <select id="newCat"><option>Salud</option><option>Mente</option><option>Productividad</option><option>Social</option></select>
+      <button class="btn-add" onclick="addH()">+ ADD</button>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="tab" id="tab-stats">
+    <div class="stats-radar-wrap">
+      <div class="radar-title">// PERFORMANCE RADAR</div>
+      <canvas id="radarChart" width="280" height="280"></canvas>
+    </div>
+    <div class="sec-tag">// CATEGORY BREAKDOWN</div>
+    <div class="stats-cat-grid" id="statsCatGrid"></div>
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="tab" id="tab-summary">
+    <div class="summary-tab-btns">
+      <button class="summary-tab-btn on" onclick="summaryPeriod('weekly',this)">WEEKLY</button>
+      <button class="summary-tab-btn" onclick="summaryPeriod('monthly',this)">MONTHLY</button>
+    </div>
+    <!-- WEEKLY -->
+    <div class="summary-period on" id="sum-weekly">
+      <div class="summary-highlight">
+        <div class="sh-tag">// THIS WEEK</div>
+        <div class="sh-val" id="weekAvg">0%</div>
+        <div class="sh-sub">promedio semanal de cumplimiento</div>
+        <div class="sh-grid">
+          <div class="sh-stat"><div class="sh-stat-val" id="weekDone">0</div><div class="sh-stat-lbl">días completados</div></div>
+          <div class="sh-stat"><div class="sh-stat-val" id="weekStreak">0</div><div class="sh-stat-lbl">racha esta semana</div></div>
+        </div>
+      </div>
+      <div class="sec-tag">// DAILY BREAKDOWN</div>
+      <div class="bar-chart" id="weekBarChart"></div>
+    </div>
+    <!-- MONTHLY -->
+    <div class="summary-period" id="sum-monthly">
+      <div class="summary-highlight">
+        <div class="sh-tag">// THIS MONTH</div>
+        <div class="sh-val" id="monthAvg">0%</div>
+        <div class="sh-sub">promedio mensual de cumplimiento</div>
+        <div class="sh-grid">
+          <div class="sh-stat"><div class="sh-stat-val" id="monthDays">0</div><div class="sh-stat-lbl">días activos</div></div>
+          <div class="sh-stat"><div class="sh-stat-val" id="monthBest">0%</div><div class="sh-stat-lbl">mejor día</div></div>
+        </div>
+      </div>
+      <div class="sec-tag">// WEEKLY BREAKDOWN</div>
+      <div class="bar-chart" id="monthBarChart"></div>
+    </div>
+  </div>
+
+  <!-- HISTORIAL -->
+  <div class="tab" id="tab-history">
+    <div class="month-nav">
+      <button class="month-btn" onclick="chMonth(-1)">←</button>
+      <span class="month-lbl" id="mLbl"></span>
+      <button class="month-btn" onclick="chMonth(1)">→</button>
+    </div>
+    <div class="sum-grid">
+      <div class="sum-card"><div class="sum-val" id="sumD">0</div><div class="sum-lbl">Días activos</div></div>
+      <div class="sum-card"><div class="sum-val" id="sumA">0%</div><div class="sum-lbl">Promedio</div></div>
+      <div class="sum-card"><div class="sum-val" id="sumS">0</div><div class="sum-lbl">Racha máx.</div></div>
+    </div>
+    <div class="cal-legend">
+      <div class="leg-item"><div class="leg-dot" style="background:#D4E8C8;"></div>1-40%</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#A8D090;"></div>41-70%</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#5A9A30;"></div>71-99%</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#4A6B2C;"></div>100%</div>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+  </div>
+
+  <!-- ALERTAS -->
+  <!-- PERFIL -->
+  <div class="tab" id="tab-profile">
+    <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;">
+      <div class="profile-avatar" id="profAvatar">?</div>
+      <div><div style="font-size:16px;font-weight:600;" id="profName">Tu perfil</div></div>
+    </div>
+    <div class="profile-card">
+      <div class="profile-hdr">// DATOS PERSONALES</div>
+      <div class="profile-row">
+        <div><label class="pf-label">NOMBRE</label><input class="pf-inp" id="pName" type="text" placeholder="Tu nombre"/></div>
+        <div><label class="pf-label">EDAD</label><input class="pf-inp" id="pAge" type="number" placeholder="Años"/></div>
+      </div>
+      <div class="profile-row">
+        <div><label class="pf-label">PESO (KG)</label><input class="pf-inp" id="pWeight" type="number" placeholder="kg"/></div>
+        <div><label class="pf-label">TALLA (CM)</label><input class="pf-inp" id="pHeight" type="number" placeholder="cm"/></div>
+      </div>
+      <div class="pf-full"><label class="pf-label">OCUPACIÓN</label>
+        <select class="pf-inp" id="pOccup"><option value="">Seleccionar...</option><option>Estudiante</option><option>Militar / Seguridad</option><option>Profesional independiente</option><option>Empleado corporativo</option><option>Emprendedor</option><option>Deportista</option><option>Docente</option><option>Artista / Creativo</option><option>Otro</option></select>
+      </div>
+      <button class="save-btn" id="saveProfileBtn" onclick="saveProfile()">GUARDAR PERFIL</button>
+    </div>
+    <div class="profile-card" id="identityCard">
+      <div class="profile-hdr">// IDENTIDAD</div>
+      <div class="pf-full"><label class="pf-label">ESTADO ACTUAL</label>
+        <textarea class="pf-inp" id="pEstadoActual" rows="3" style="resize:none;" placeholder="¿Dónde estás hoy?"></textarea>
+      </div>
+      <div class="pf-full"><label class="pf-label">VISIÓN</label>
+        <textarea class="pf-inp" id="pVision" rows="3" style="resize:none;" placeholder="¿Quién quieres llegar a ser?"></textarea>
+      </div>
+      <div class="pf-full"><label class="pf-label">ÁREAS</label>
+        <div class="int-chips" id="profAreas"></div>
+      </div>
+      <div class="pf-full"><label class="pf-label">OBJETIVOS</label>
+        <div id="profObjetivosList" style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;"></div>
+        <div style="display:flex;gap:8px;">
+          <select class="pf-inp" id="newObjArea" style="margin-bottom:0;flex:0 0 110px;"></select>
+          <input class="pf-inp" id="newObjDesc" placeholder="Nuevo objetivo..." style="margin-bottom:0;flex:1;"/>
+        </div>
+        <button class="btn-add" style="margin-top:8px;width:100%;" onclick="addObjetivo()">+ AGREGAR OBJETIVO</button>
+      </div>
+      <button class="save-btn" onclick="saveProfile()">GUARDAR PERFIL</button>
+    </div>
+  </div>
+</div>
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+<!-- FIREBASE SDKs -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, getDocs, deleteDoc, query, where } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA_Io6E_Q5-dOrtSSZPlb8DWbHgsWgaGPw",
+  authDomain: "strikebase-67c2b.firebaseapp.com",
+  databaseURL: "https://strikebase-67c2b-default-rtdb.firebaseio.com",
+  projectId: "strikebase-67c2b",
+  storageBucket: "strikebase-67c2b.firebasestorage.app",
+  messagingSenderId: "356447443955",
+  appId: "1:356447443955:web:e504c6acd8b1e2ea609086"
+};
+
+const firebaseApp = initializeApp(firebaseConfig);
+const auth = getAuth(firebaseApp);
+const db = getFirestore(firebaseApp);
+
+// ── CONSTANTS ──
+const MONTHS=['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
+const DAYS_SHORT=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+const CAT_MAP={'Ejercicio':'Salud','Lectura':'Mente','Meditación':'Mente','Agua 8 vasos':'Salud','Sin redes por la mañana':'Productividad','Dormir 8 hrs':'Salud','Journaling':'Mente','Cold shower':'Salud','Estudiar 1 hr':'Productividad','Sin alcohol':'Salud','Proteína en cada comida':'Salud','Caminar 10,000 pasos':'Salud'};
+// ── ÁREAS FIJAS DE IDENTIDAD (StrikeBase V1 — sección 7 del modelo de datos) ──
+const AREAS=['Física','Mental','Disciplina','Productividad','Finanzas','Relaciones'];
+// ── Umbral de días en racha para pasar de 'construccion' a 'consistente' (Fase 2B) ──
+const UMBRAL_CONSISTENTE=21;
+
+// ── TABLA DE REGLAS: área → hábitos sugeridos (Fase 3 — LLENAR CON TU CRITERIO) ──
+// Formato de cada hábito sugerido: { nombre, frecuencia:'diaria'|'personalizada', horarioSugerido }
+// Mientras esté vacía, la app funciona igual: el usuario simplemente elige hábitos manualmente al crear una estrategia.
+const HABITOS_SUGERIDOS={
+  'Física':[],
+  'Mental':[],
+  'Disciplina':[],
+  'Productividad':[],
+  'Finanzas':[],
+  'Relaciones':[]
+};
+
+let strategies=[]; // estrategias del usuario, cargadas al iniciar sesión
+let inconsistencies=[]; // Fase 4
+let evaluations=[]; // Fase 4
+const UMBRAL_PATRON=3; // inconsistencias en 7 días para disparar evaluación
+
+// ── STATE ──
+let currentUser=null;
+let userProfile={name:'',age:'',gender:'',weight:'',height:'',occup:'',goal:'',interests:[],estadoActual:'',vision:'',areas:[],objetivos:[]};
+let habits=[];
+let nId=Date.now();
+let curMonth=new Date().getMonth(), curYear=new Date().getFullYear();
+let isAuthMode='login';
+let saveTimeout=null;
+let currentStreak=0;
+let bestStreak=0;
+let radarChart=null;
+let allDaysData={};
+
+// ── HELPERS ──
+function todayKey(){const n=new Date();return `${n.getFullYear()}-${n.getMonth()+1}-${n.getDate()}`;}
+function showToast(msg='✓ GUARDADO AUTOMÁTICAMENTE'){
+  const toast=document.getElementById('toast');
+  const inner=document.getElementById('toastInner');
+  inner.textContent=msg;
+  toast.classList.add('show');
+  clearTimeout(saveTimeout);
+  saveTimeout=setTimeout(()=>toast.classList.remove('show'),2500);
+}
+function showSaved(){showToast('✓ PERFIL ACTUALIZADO · GUARDADO AUTOMÁTICAMENTE');}
+
+// ── AUTH STATE LISTENER ──
+onAuthStateChanged(auth, async(user)=>{
+  document.getElementById('loadingScreen').classList.add('hidden');
+  if(user){
+    currentUser=user;
+    const profileDoc=await getDoc(doc(db,'users',user.uid));
+    if(!profileDoc.exists()){
+      // New user — show onboarding
+      document.getElementById('ob').classList.add('active');
+    } else {
+      userProfile={...userProfile,...profileDoc.data()};
+      await loadHabitsFromDB();
+      showApp();
+    }
+  } else {
+    currentUser=null;
+    document.getElementById('authScreen').classList.add('active');
+  }
+});
+
+// ── AUTH ──
+window.authTab=function(mode,btn){
+  isAuthMode=mode;
+  document.querySelectorAll('.auth-tab').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('authBtn').textContent=mode==='login'?'ENTRAR ↗':'REGISTRARSE ↗';
+  document.getElementById('authPassConfirm').style.display=mode==='register'?'block':'none';
+  document.getElementById('authError').textContent='';
+};
+
+window.doAuth=async function(){
+  const email=document.getElementById('authEmail').value.trim();
+  const pass=document.getElementById('authPass').value;
+  const confirm=document.getElementById('authPassConfirm').value;
+  const btn=document.getElementById('authBtn');
+  const errEl=document.getElementById('authError');
+  if(!email||!pass){errEl.textContent='Completa todos los campos.';return;}
+  if(isAuthMode==='register'&&pass!==confirm){errEl.textContent='Las contraseñas no coinciden.';return;}
+  btn.disabled=true;errEl.textContent='';
+  try{
+    if(isAuthMode==='login'){
+      await signInWithEmailAndPassword(auth,email,pass);
+    } else {
+      await createUserWithEmailAndPassword(auth,email,pass);
+    }
+  } catch(e){
+    const msgs={'auth/user-not-found':'Correo no registrado.','auth/wrong-password':'Contraseña incorrecta.','auth/email-already-in-use':'Este correo ya está registrado.','auth/weak-password':'La contraseña debe tener al menos 6 caracteres.','auth/invalid-email':'Correo inválido.','auth/invalid-credential':'Correo o contraseña incorrectos.'};
+    errEl.textContent=msgs[e.code]||'Error. Intenta de nuevo.';
+    btn.disabled=false;
+  }
+};
+
+window.doLogout=async function(){
+  await signOut(auth);
+  document.getElementById('app').classList.remove('active');
+  document.getElementById('authScreen').classList.add('active');
+  habits=[];userProfile={name:'',age:'',gender:'',weight:'',height:'',occup:'',goal:'',interests:[],estadoActual:'',vision:'',areas:[],objetivos:[]};
+};
+
+window.doGoogleAuth=async function(){
+  const btn=document.getElementById('googleBtn');
+  const errEl=document.getElementById('authError');
+  btn.disabled=true; errEl.textContent='';
+  try{
+    const provider=new GoogleAuthProvider();
+    await signInWithPopup(auth,provider);
+  } catch(e){
+    const msgs={'auth/popup-closed-by-user':'Ventana cerrada. Intenta de nuevo.','auth/cancelled-popup-request':'Intenta de nuevo.','auth/popup-blocked':'Permite las ventanas emergentes en tu navegador.'};
+    errEl.textContent=msgs[e.code]||'Error al iniciar con Google.';
+    btn.disabled=false;
+  }
+};
+
+// ── ONBOARDING ──
+window.gs=function(n){document.querySelectorAll('.ob-step').forEach((s,i)=>s.classList.toggle('active',i===n));};
+window.chkS1=function(){const n=document.getElementById('iName').value.trim();document.getElementById('btnS1').disabled=!n;};
+
+// ── IDENTIDAD: estado actual, visión, áreas (Fase 1) ──
+window.chkS2=function(){
+  const ea=document.getElementById('iEstadoActual').value.trim();
+  const vi=document.getElementById('iVision').value.trim();
+  document.getElementById('btnS2').disabled=!(ea&&vi);
+};
+window.toggleArea=function(el){
+  el.classList.toggle('sel');
+  userProfile.areas=[...document.querySelectorAll('#areaChips .ob-chip.sel')].map(c=>c.textContent);
+};
+window.goToObjetivos=function(){
+  userProfile.estadoActual=document.getElementById('iEstadoActual').value.trim();
+  userProfile.vision=document.getElementById('iVision').value.trim();
+  renderObjetivosInputs();
+  gs(3);
+};
+function renderObjetivosInputs(){
+  const cont=document.getElementById('objetivosInputs');
+  cont.innerHTML='';
+  if(!userProfile.areas.length){
+    cont.innerHTML='<p class="ob-sub">No elegiste ninguna área — puedes definir objetivos después desde tu Perfil.</p>';
+    return;
+  }
+  userProfile.areas.forEach(area=>{
+    const wrap=document.createElement('div');
+    wrap.style.marginBottom='14px';
+    wrap.innerHTML=`<p class="ob-tag" style="margin-bottom:6px;">// ${area.toUpperCase()}</p>
+      <input class="ob-inp" data-area="${area}" placeholder="Objetivo en ${area}..." style="margin-bottom:0;"/>`;
+    cont.appendChild(wrap);
+  });
+}
+
+window.finishOnboarding=async function(){
+  userProfile.name=document.getElementById('iName').value.trim()||'Tú';
+  userProfile.age=document.getElementById('iAge').value;
+  userProfile.gender=document.getElementById('iGender').value;
+  userProfile.weight=document.getElementById('iWeight').value;
+  userProfile.height=document.getElementById('iHeight').value;
+  userProfile.occup=document.getElementById('iOccup').value;
+  userProfile.onboardingDone=true;
+
+  // ── Objetivos por área (Fase 1 — Identidad) ──
+  userProfile.objetivos=[...document.querySelectorAll('#objetivosInputs input[data-area]')]
+    .filter(inp=>inp.value.trim())
+    .map(inp=>({
+      id:'obj_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),
+      area:inp.dataset.area,
+      descripcion:inp.value.trim(),
+      estado:'activo',
+      fechaCreacion:new Date().toISOString()
+    }));
+
+  await setDoc(doc(db,'users',currentUser.uid),userProfile);
+
+  const chips=[...document.querySelectorAll('#habitChips .ob-chip.sel')];
+  const initialHabits=chips.length?chips.map(c=>({name:c.textContent,cat:CAT_MAP[c.textContent]||'Salud',streak:0})):
+    [{name:'Ejercicio 30 min',cat:'Salud',streak:0},{name:'Lectura 20 min',cat:'Mente',streak:0}];
+
+  for(const h of initialHabits){
+    await addDoc(collection(db,'users',currentUser.uid,'habits'),{...h,createdAt:new Date().toISOString()});
+  }
+  await loadHabitsFromDB();
+  document.getElementById('ob').classList.remove('active');
+  showApp();
+};
+
+// ── FIRESTORE: LOAD HABITS ──
+async function loadHabitsFromDB(){
+  const snap=await getDocs(collection(db,'users',currentUser.uid,'habits'));
+  habits=[];
+  snap.forEach(d=>habits.push({id:d.id,...d.data()}));
+  // Load today's completions
+  const todaySnap=await getDoc(doc(db,'users',currentUser.uid,'days',todayKey()));
+  const todayDone=todaySnap.exists()?todaySnap.data().done||[]:[];
+  habits.forEach(h=>{h.done=todayDone.includes(h.id);});
+
+  // ── Fase 3: cargar estrategias del usuario ──
+  const stratSnap=await getDocs(collection(db,'users',currentUser.uid,'strategies'));
+  strategies=[];
+  stratSnap.forEach(d=>strategies.push({id:d.id,...d.data()}));
+
+  // ── Fase 4: cargar inconsistencias y evaluaciones ──
+  const incSnap=await getDocs(collection(db,'users',currentUser.uid,'inconsistencies'));
+  inconsistencies=[];
+  incSnap.forEach(d=>inconsistencies.push({id:d.id,...d.data()}));
+  const evalSnap=await getDocs(collection(db,'users',currentUser.uid,'evaluations'));
+  evaluations=[];
+  evalSnap.forEach(d=>evaluations.push({id:d.id,...d.data()}));
+}
+
+// ── FIRESTORE: SAVE TODAY ──
+async function saveTodayToDB(){
+  const done=habits.filter(h=>h.done).map(h=>h.id);
+  const pct=habits.length?Math.round((done.length/habits.length)*100):0;
+  await setDoc(doc(db,'users',currentUser.uid,'days',todayKey()),{done,pct,updatedAt:new Date().toISOString()});
+  calcStreak();
+  showToast('✓ PROGRESO GUARDADO');
+}
+
+// ── FASE 4: INCONSISTENCIAS ──
+const DAY_ABBR=['dom','lun','mar','mie','jue','vie','sab']; // índice = Date.getDay()
+const MOTIVOS=[
+  {v:'falta_tiempo',l:'Falta de tiempo'},{v:'olvido',l:'Se me olvidó'},
+  {v:'horario_incorrecto',l:'El horario no funcionó'},{v:'dificultad',l:'Fue más difícil de lo esperado'},
+  {v:'falta_energia',l:'Falta de energía'},{v:'emergencia',l:'Emergencia / imprevisto'},{v:'otro',l:'Otro motivo'}
+];
+
+function dayKeyOf(date){return `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`;}
+function estaProgramado(h,date){
+  if(h.frecuencia!=='personalizada')return true;
+  return (h.dias||[]).includes(DAY_ABBR[date.getDay()]);
+}
+
+async function revisarInconsistenciasAyer(){
+  const ayer=new Date(); ayer.setDate(ayer.getDate()-1);
+  const ayerKey=dayKeyOf(ayer);
+  const ayerSnap=await getDoc(doc(db,'users',currentUser.uid,'days',ayerKey));
+  const doneAyer=ayerSnap.exists()?(ayerSnap.data().done||[]):[]; // sin registro = nada cumplido, no "nada que revisar"
+  const yaRegistradas=new Set(inconsistencies.filter(i=>i.fecha===ayerKey).map(i=>i.habitId));
+
+  const pendientes=habits.filter(h=>{
+    if(doneAyer.includes(h.id))return false; // se cumplió, no es inconsistencia
+    if(yaRegistradas.has(h.id))return false; // ya se preguntó el motivo
+    if(!estaProgramado(h,ayer))return false; // no tocaba ese día
+    if(h.fechaCreacion&&new Date(h.fechaCreacion)>ayer)return false; // el hábito no existía todavía
+    if(h.estado==='retirado')return false;
+    return true;
+  });
+
+  if(pendientes.length)mostrarModalInconsistencias(pendientes,ayerKey);
+}
+
+function mostrarModalInconsistencias(pendientes,fecha){
+  const modal=document.getElementById('incModal');
+  const body=document.getElementById('incModalBody');
+  body.innerHTML=`<div style="font-size:12px;color:var(--muted);margin-bottom:14px;">Ayer no marcaste estos hábitos. Cuéntanos qué pasó — nos ayuda a mejorar el sistema, no es un examen.</div>` +
+    pendientes.map(h=>`
+      <div style="margin-bottom:14px;">
+        <div style="font-size:12px;font-weight:600;margin-bottom:6px;">${h.name}</div>
+        <select id="incMotivo-${h.id}" style="width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:var(--white);border-radius:6px;padding:6px;font-size:11px;margin-bottom:6px;">
+          ${MOTIVOS.map(m=>`<option value="${m.v}">${m.l}</option>`).join('')}
+        </select>
+      </div>`).join('');
+  modal.dataset.fecha=fecha;
+  modal.dataset.habitIds=JSON.stringify(pendientes.map(h=>h.id));
+  modal.classList.add('on');
+}
+
+window.guardarInconsistencias=async function(){
+  const modal=document.getElementById('incModal');
+  const fecha=modal.dataset.fecha;
+  const habitIds=JSON.parse(modal.dataset.habitIds);
+  const afectados=[];
+  for(const hid of habitIds){
+    const motivo=document.getElementById('incMotivo-'+hid).value;
+    const ref=await addDoc(collection(db,'users',currentUser.uid,'inconsistencies'),{
+      habitId:hid,fecha,motivo,motivoDetalle:null,tipo:null,fechaCreacion:new Date().toISOString()
+    });
+    inconsistencies.push({id:ref.id,habitId:hid,fecha,motivo,motivoDetalle:null,tipo:null,fechaCreacion:new Date().toISOString()});
+    afectados.push(hid);
+  }
+  modal.classList.remove('on');
+  showToast('✓ REGISTRADO');
+  for(const hid of afectados)await revisarPatron(hid);
+};
+
+// ── DETECCIÓN DE PATRÓN → dispara Evaluación ──
+async function revisarPatron(habitId){
+  const hace7dias=new Date(); hace7dias.setDate(hace7dias.getDate()-7);
+  const recientes=inconsistencies.filter(i=>i.habitId===habitId&&new Date(i.fechaCreacion)>=hace7dias);
+  if(recientes.length<UMBRAL_PATRON)return;
+
+  const evalPendiente=evaluations.find(e=>e.habitId===habitId&&!e.resultado);
+  if(evalPendiente)return; // ya hay una evaluación abierta para este hábito
+
+  for(const inc of recientes){
+    if(inc.tipo!=='patron_repetitivo'){
+      inc.tipo='patron_repetitivo';
+      await updateDoc(doc(db,'users',currentUser.uid,'inconsistencies',inc.id),{tipo:'patron_repetitivo'});
+    }
+  }
+  mostrarModalEvaluacion(habitId);
+}
+
+function mostrarModalEvaluacion(habitId){
+  const h=habits.find(x=>x.id===habitId);
+  if(!h)return;
+  const modal=document.getElementById('evalModal');
+  document.getElementById('evalModalTitle').textContent=`Patrón detectado: "${h.name}"`;
+  document.getElementById('evalModalBody').innerHTML=`
+    <div style="font-size:12px;color:var(--muted);margin-bottom:14px;">Van varios días seguidos sin cumplirse. No es sobre fuerza de voluntad — es momento de revisar el sistema.</div>
+    <label style="font-size:11px;color:var(--muted);">¿Qué está ocurriendo con este hábito?</label>
+    <textarea id="evQueOcurrio" rows="2" style="width:100%;resize:none;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:var(--white);border-radius:6px;padding:6px;font-size:11px;margin:6px 0 12px;"></textarea>
+    <label style="font-size:11px;color:var(--muted);">¿Por qué crees que pasa?</label>
+    <textarea id="evPorQue" rows="2" style="width:100%;resize:none;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:var(--white);border-radius:6px;padding:6px;font-size:11px;margin:6px 0 12px;"></textarea>
+    <label style="display:flex;align-items:center;gap:6px;font-size:11px;margin-bottom:6px;"><input type="checkbox" id="evHorario"/> El horario actual no es adecuado</label>
+    <label style="display:flex;align-items:center;gap:6px;font-size:11px;margin-bottom:6px;"><input type="checkbox" id="evFrecuencia"/> La frecuencia no es adecuada</label>
+    <label style="display:flex;align-items:center;gap:6px;font-size:11px;margin-bottom:12px;"><input type="checkbox" id="evDificultad"/> Es más difícil de lo que pensé</label>
+    <label style="font-size:11px;color:var(--muted);">¿Qué debería cambiar?</label>
+    <textarea id="evQueCambiar" rows="2" style="width:100%;resize:none;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:var(--white);border-radius:6px;padding:6px;font-size:11px;margin:6px 0 14px;"></textarea>
+    <div style="display:flex;gap:8px;">
+      <button class="btn-add" style="flex:1;" onclick="resolverEvaluacion('${habitId}','mantener')">MANTENER ASÍ</button>
+      <button class="btn-add" style="flex:1;background:var(--accent);" onclick="resolverEvaluacion('${habitId}','modificar')">AJUSTAR HÁBITO</button>
+    </div>`;
+  modal.classList.add('on');
+}
+
+window.resolverEvaluacion=async function(habitId,resultado){
+  const h=habits.find(x=>x.id===habitId);
+  const respuestas={
+    queOcurrio:document.getElementById('evQueOcurrio').value.trim(),
+    porQueOcurrio:document.getElementById('evPorQue').value.trim(),
+    horarioAdecuado:!document.getElementById('evHorario').checked,
+    frecuenciaAdecuada:!document.getElementById('evFrecuencia').checked,
+    dificultadAdecuada:!document.getElementById('evDificultad').checked,
+    queDeberiaCambiar:document.getElementById('evQueCambiar').value.trim()
+  };
+  const ref=await addDoc(collection(db,'users',currentUser.uid,'evaluations'),{
+    habitId,estrategiaId:h?.estrategiaId||null,disparadaPor:'patron_inconsistencias',
+    respuestas,resultado,nuevaEstrategiaId:null,fecha:new Date().toISOString()
+  });
+  evaluations.push({id:ref.id,habitId,estrategiaId:h?.estrategiaId||null,disparadaPor:'patron_inconsistencias',respuestas,resultado,nuevaEstrategiaId:null,fecha:new Date().toISOString()});
+  document.getElementById('evalModal').classList.remove('on');
+  if(resultado==='modificar'){
+    showToast('Ajusta el horario o frecuencia del hábito');
+    switchTabById('today');
+    setTimeout(()=>toggleEditHabit(habitId),300);
+  }else{
+    showToast('✓ ESTRATEGIA CONFIRMADA — sigue igual');
+  }
+};
+
+function switchTabById(id){
+  const btn=[...document.querySelectorAll('.nav button')].find(b=>b.getAttribute('onclick')?.includes(`'${id}'`));
+  if(btn)switchTab(id,btn);
+}
+
+// ── SHOW APP ──
+function showApp(){
+  document.getElementById('authScreen').classList.remove('active');
+  document.getElementById('ob').classList.remove('active');
+  document.getElementById('app').classList.add('active');
+  document.getElementById('hdrName').textContent=(userProfile.name||'').toUpperCase();
+  syncProfileUI();
+  renderToday();
+  renderCalendar();
+  setBriefing();
+  loadQuote();
+  calcStreak();
+  revisarInconsistenciasAyer();
+}
+
+// ── TODAY ──
+window.toggleH=async function(id){
+  const h=habits.find(x=>x.id===id);
+  if(h){h.done=!h.done;renderToday();await saveTodayToDB();}
+};
+
+const ESTADO_LABEL={nuevo:'NUEVO',construccion:'EN CONSTRUCCIÓN',consistente:'CONSISTENTE',consolidado:'CONSOLIDADO',retirado:'RETIRADO'};
+const ESTADO_COLOR={nuevo:{bg:'rgba(255,255,255,0.06)',fg:'var(--muted)'},construccion:{bg:'var(--warning-bg)',fg:'var(--warning)'},consistente:{bg:'var(--success-bg)',fg:'var(--success)'},consolidado:{bg:'rgba(255,138,61,0.14)',fg:'var(--accent)'},retirado:{bg:'rgba(255,255,255,0.04)',fg:'var(--muted)'}};
+let editingHabitId=null;
+
+function renderToday(){
+  const list=document.getElementById('hList');
+  list.innerHTML='';
+  habits.forEach(h=>{
+    const el=document.createElement('div');
+    el.className='hcard'+(h.done?' done':'');
+    const racha=h.rachaActual||0;
+    const cumplidos=h.diasCumplidos||0;
+    const estado=h.estado||'nuevo';
+    const ec=ESTADO_COLOR[estado]||ESTADO_COLOR.nuevo;
+    const horarioTxt=h.horario?' · '+h.horario:'';
+    el.innerHTML=`
+      <div class="hbox" onclick="toggleH('${h.id}')"><svg class="chk" width="11" height="11" viewBox="0 0 11 11" fill="none"><polyline points="1.5,5.5 4.5,8.5 9.5,2" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+      <div style="flex:1;min-width:0;cursor:pointer;" onclick="toggleEditHabit('${h.id}')">
+        <div class="htitle">${h.name}</div>
+        <div class="hmeta">${h.area||h.cat||''}${horarioTxt}${racha>0?' · 🔥<span style="font-family:var(--mono);">'+racha+'d</span>':''}${cumplidos>0?' · <span style="font-family:var(--mono);">'+cumplidos+'</span> cumplidos':''}</div>
+        <div style="display:inline-block;margin-top:5px;font-size:8px;letter-spacing:.08em;padding:3px 8px;border-radius:999px;background:${ec.bg};color:${ec.fg};text-transform:uppercase;font-weight:600;">${ESTADO_LABEL[estado]||estado}</div>
+      </div>
+      <div class="hstreak" onclick="toggleH('${h.id}')">${h.done?'✓':''}</div>
+      <button class="hdelete" onclick="deleteH('${h.id}')">×</button>
+      <div id="edit-${h.id}" style="display:none;width:100%;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.06);"></div>`;
+    list.appendChild(el);
+  });
+  updatePct();
+}
+
+// ── EDICIÓN: frecuencia / días / horario / recordatorio (Fase 2B) ──
+window.toggleEditHabit=function(id){
+  const panel=document.getElementById('edit-'+id);
+  if(!panel)return;
+  const open=panel.style.display!=='none';
+  document.querySelectorAll('[id^="edit-"]').forEach(p=>p.style.display='none');
+  if(open){editingHabitId=null;return;}
+  const h=habits.find(x=>x.id===id);
+  const dias=h.dias||[];
+  const dayAbbr=[['lun','L'],['mar','M'],['mie','X'],['jue','J'],['vie','V'],['sab','S'],['dom','D']];
+  panel.innerHTML=`
+    <div style="display:flex;gap:8px;margin-bottom:8px;">
+      <select id="edFreq-${id}" style="flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:var(--white);border-radius:6px;padding:6px;font-size:11px;">
+        <option value="diaria" ${h.frecuencia!=='personalizada'?'selected':''}>Diaria</option>
+        <option value="personalizada" ${h.frecuencia==='personalizada'?'selected':''}>Días específicos</option>
+      </select>
+      <input id="edHor-${id}" type="time" value="${h.horario||''}" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:var(--white);border-radius:6px;padding:6px;font-size:11px;"/>
+    </div>
+    <div id="edDias-${id}" style="display:${h.frecuencia==='personalizada'?'flex':'none'};gap:4px;margin-bottom:8px;">
+      ${dayAbbr.map(([full,ab])=>`<div onclick="this.classList.toggle('sel')" class="day-chip${dias.includes(full)?' sel':''}" data-day="${full}" style="flex:1;text-align:center;padding:6px 0;border-radius:6px;font-size:10px;cursor:pointer;background:${dias.includes(full)?'var(--accent)':'rgba(255,255,255,0.04)'};color:${dias.includes(full)?'#fff':'var(--muted)'};">${ab}</div>`).join('')}
+    </div>
+    <label style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);margin-bottom:10px;">
+      <input type="checkbox" id="edRec-${id}" ${h.recordatorioActivado?'checked':''}/> Recordatorio activado (se conecta cuando tengamos notificaciones push)
+    </label>
+    <button class="btn-add" style="width:100%;" onclick="saveHabitSchedule('${id}')">GUARDAR CONFIGURACIÓN</button>`;
+  document.getElementById('edFreq-'+id).onchange=function(){
+    document.getElementById('edDias-'+id).style.display=this.value==='personalizada'?'flex':'none';
+  };
+  panel.style.display='block';
+  editingHabitId=id;
+};
+
+window.saveHabitSchedule=async function(id){
+  const h=habits.find(x=>x.id===id);
+  if(!h)return;
+  const frecuencia=document.getElementById('edFreq-'+id).value;
+  const horario=document.getElementById('edHor-'+id).value||null;
+  const recordatorioActivado=document.getElementById('edRec-'+id).checked;
+  const dias=frecuencia==='personalizada'?[...document.querySelectorAll(`#edDias-${id} .day-chip.sel`)].map(c=>c.dataset.day):[];
+  h.frecuencia=frecuencia;h.horario=horario;h.recordatorioActivado=recordatorioActivado;h.dias=dias;
+  await updateDoc(doc(db,'users',currentUser.uid,'habits',id),{frecuencia,horario,recordatorioActivado,dias});
+  document.getElementById('edit-'+id).style.display='none';
+  editingHabitId=null;
+  renderToday();
+  showToast('✓ HÁBITO ACTUALIZADO');
+};
+
+function updatePct(){
+  const done=habits.filter(h=>h.done).length;
+  const pct=habits.length?Math.round((done/habits.length)*100):0;
+  document.getElementById('cpPct').textContent=pct+'%';
+  document.getElementById('progFill').style.width=pct+'%';
+}
+
+window.addH=async function(){
+  const inp=document.getElementById('newH');
+  const cat=document.getElementById('newCat').value;
+  const name=inp.value.trim();
+  if(!name)return;
+  const newHabit={
+    name,cat,area:cat,done:false,
+    frecuencia:'diaria',dias:[],horario:null,recordatorioActivado:false,
+    estado:'nuevo',esPersonalizado:true,objetivoId:null,estrategiaId:null,
+    rachaActual:0,rachaMaxima:0,diasCumplidos:0,diasProgramados:0,
+    fechaConsolidacion:null,fechaCreacion:new Date().toISOString(),createdAt:new Date().toISOString()
+  };
+  const ref=await addDoc(collection(db,'users',currentUser.uid,'habits'),newHabit);
+  habits.push({id:ref.id,...newHabit});
+  inp.value='';
+  renderToday();
+};
+
+window.deleteH=async function(id){
+  await deleteDoc(doc(db,'users',currentUser.uid,'habits',id));
+  habits=habits.filter(h=>h.id!==id);
+  renderToday();
+  await saveTodayToDB();
+};
+
+function setBriefing(){
+  const h=new Date().getHours();
+  const g=h<12?'Buenos días':h<18?'Buenas tardes':'Buenas noches';
+  const n=userProfile.name?`, ${userProfile.name}`:'';
+  document.getElementById('cpGreeting').textContent=`${g}${n}. ${habits.length} hábito${habits.length!==1?'s':''} en tu lista de hoy.`;
+}
+
+// ── HISTORIAL ──
+window.chMonth=function(dir){
+  curMonth+=dir;
+  if(curMonth<0){curMonth=11;curYear--;}
+  if(curMonth>11){curMonth=0;curYear++;}
+  renderCalendar();
+};
+
+async function renderCalendar(){
+  document.getElementById('mLbl').textContent=`${MONTHS[curMonth]} ${curYear}`;
+  const grid=document.getElementById('calGrid');
+  grid.innerHTML='';
+  DAYS_SHORT.forEach(d=>{const el=document.createElement('div');el.className='cal-dn';el.textContent=d[0];grid.appendChild(el);});
+
+  // Load month data from Firestore
+  const monthData={};
+  try{
+    const snap=await getDocs(collection(db,'users',currentUser.uid,'days'));
+    snap.forEach(d=>{
+      const key=d.id;
+      const[y,m]=key.split('-').map(Number);
+      if(y===curYear&&m===curMonth+1)monthData[key]=d.data().pct||0;
+    });
+  }catch(e){}
+
+  const first=new Date(curYear,curMonth,1).getDay();
+  const dim=new Date(curYear,curMonth+1,0).getDate();
+  const today=new Date();
+  for(let i=0;i<first;i++){const el=document.createElement('div');el.className='cal-d empty';grid.appendChild(el);}
+  let act=0,tot=0,mx=0,cur=0;
+  for(let d=1;d<=dim;d++){
+    const el=document.createElement('div');
+    const isToday=d===today.getDate()&&curMonth===today.getMonth()&&curYear===today.getFullYear();
+    const isFut=new Date(curYear,curMonth,d)>today;
+    const key=`${curYear}-${curMonth+1}-${d}`;
+    if(isFut){el.className='cal-d future';el.textContent=d;}
+    else{
+      const p=isToday?(habits.length?Math.round((habits.filter(h=>h.done).length/habits.length)*100):0):(monthData[key]||0);
+      const cls=p>=100?'perfect':p>=71?'high':p>=41?'mid':p>=1?'low':'none';
+      if(p>=41){cur++;mx=Math.max(mx,cur);}else cur=0;
+      if(p>0){act++;tot+=p;}
+      el.className=`cal-d ${cls}`;el.textContent=d;
+    }
+    if(isToday)el.classList.add('today-d');
+    grid.appendChild(el);
+  }
+  document.getElementById('sumD').textContent=act;
+  document.getElementById('sumA').textContent=act?Math.round(tot/act)+'%':'0%';
+  document.getElementById('sumS').textContent=mx;
+}
+
+// ── PERFIL ──
+function syncProfileUI(){
+  if(userProfile.name)document.getElementById('pName').value=userProfile.name;
+  if(userProfile.age)document.getElementById('pAge').value=userProfile.age;
+  if(userProfile.weight)document.getElementById('pWeight').value=userProfile.weight;
+  if(userProfile.height)document.getElementById('pHeight').value=userProfile.height;
+  if(userProfile.occup)document.getElementById('pOccup').value=userProfile.occup;
+  document.getElementById('profAvatar').textContent=userProfile.name?userProfile.name[0].toUpperCase():'?';
+  document.getElementById('profName').textContent=userProfile.name||'Tu perfil';
+
+  // ── IDENTIDAD (Fase 1) ──
+  document.getElementById('pEstadoActual').value=userProfile.estadoActual||'';
+  document.getElementById('pVision').value=userProfile.vision||'';
+
+  const areaCont=document.getElementById('profAreas');
+  areaCont.innerHTML='';
+  AREAS.forEach(area=>{
+    const chip=document.createElement('div');
+    chip.className='int-chip'+((userProfile.areas||[]).includes(area)?' sel':'');
+    chip.textContent=area;
+    chip.onclick=()=>chip.classList.toggle('sel');
+    areaCont.appendChild(chip);
+  });
+
+  const objSel=document.getElementById('newObjArea');
+  objSel.innerHTML=AREAS.map(a=>`<option>${a}</option>`).join('');
+
+  renderObjetivosList();
+}
+
+function renderObjetivosList(){
+  const cont=document.getElementById('profObjetivosList');
+  cont.innerHTML='';
+  const objetivos=userProfile.objetivos||[];
+  if(!objetivos.length){
+    cont.innerHTML='<div style="font-size:12px;color:var(--muted);">Sin objetivos todavía.</div>';
+    return;
+  }
+  objetivos.forEach(o=>{
+    const activa=strategies.find(s=>s.objetivoId===o.id&&s.estado==='activa');
+    const nHabitos=activa?(activa.habitosAsociados||[]).length:0;
+    const wrap=document.createElement('div');
+    wrap.style.cssText='padding:8px;background:rgba(255,255,255,0.03);border-radius:6px;font-size:12px;';
+    wrap.innerHTML=`
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="flex:0 0 auto;color:var(--accent);font-size:10px;letter-spacing:.05em;">${o.area.toUpperCase()}</span>
+        <span style="flex:1;${o.estado==='completado'?'text-decoration:line-through;color:var(--muted);':''}">${o.descripcion}</span>
+        <button onclick="toggleObjetivoEstado('${o.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;">${o.estado==='completado'?'↺':'✓'}</button>
+        <button onclick="removeObjetivo('${o.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;">×</button>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px;">
+        <span style="font-size:10px;color:var(--muted);">${activa?nHabitos+' hábito'+(nHabitos!==1?'s':'')+' en esta estrategia (v'+activa.version+')':'Sin estrategia todavía'}</span>
+        <button onclick="toggleEstrategiaPanel('${o.id}')" style="background:none;border:1px solid rgba(255,255,255,0.1);color:var(--accent);border-radius:5px;padding:3px 8px;font-size:9px;letter-spacing:.05em;cursor:pointer;">${activa?'GESTIONAR':'CREAR ESTRATEGIA'}</button>
+      </div>
+      <div id="stratPanel-${o.id}" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.06);"></div>`;
+    cont.appendChild(wrap);
+  });
+}
+
+// ── ESTRATEGIA (Fase 3) ──
+window.toggleEstrategiaPanel=function(objetivoId){
+  const panel=document.getElementById('stratPanel-'+objetivoId);
+  const open=panel.style.display!=='none';
+  document.querySelectorAll('[id^="stratPanel-"]').forEach(p=>p.style.display='none');
+  if(open)return;
+  const o=(userProfile.objetivos||[]).find(x=>x.id===objetivoId);
+  const activa=strategies.find(s=>s.objetivoId===objetivoId&&s.estado==='activa');
+  panel.innerHTML=activa?renderEstrategiaGestion(activa):renderEstrategiaCreacion(o);
+  panel.style.display='block';
+};
+
+function renderEstrategiaCreacion(o){
+  const sugeridos=HABITOS_SUGERIDOS[o.area]||[];
+  const sugeridosHtml=sugeridos.length
+    ? sugeridos.map((h,i)=>`<label style="display:flex;align-items:center;gap:6px;font-size:11px;margin-bottom:6px;"><input type="checkbox" class="strat-sug" data-idx="${i}" checked/> ${h.nombre}${h.horarioSugerido?' · '+h.horarioSugerido:''}</label>`).join('')
+    : `<div style="font-size:11px;color:var(--muted);margin-bottom:8px;">Todavía no hay hábitos sugeridos para "${o.area}" en la tabla de reglas — agrega los tuyos abajo.</div>`;
+  return `
+    <div style="font-size:10px;color:var(--accent);letter-spacing:.05em;margin-bottom:8px;">// HÁBITOS SUGERIDOS</div>
+    ${sugeridosHtml}
+    <div style="font-size:10px;color:var(--accent);letter-spacing:.05em;margin:10px 0 6px;">// AGREGAR HÁBITO PROPIO</div>
+    <div id="stratCustom-${o.id}"><input class="strat-custom-inp" placeholder="Nombre del hábito..." style="width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:var(--white);border-radius:6px;padding:6px;font-size:11px;margin-bottom:6px;"/></div>
+    <button onclick="addCustomHabitoInput('${o.id}')" style="background:none;border:none;color:var(--muted);font-size:10px;cursor:pointer;margin-bottom:10px;">+ otro hábito</button>
+    <button class="btn-add" style="width:100%;" onclick="activarEstrategia('${o.id}')">ACTIVAR ESTRATEGIA</button>`;
+}
+
+window.addCustomHabitoInput=function(objetivoId){
+  const cont=document.getElementById('stratCustom-'+objetivoId);
+  const inp=document.createElement('input');
+  inp.className='strat-custom-inp';
+  inp.placeholder='Nombre del hábito...';
+  inp.style.cssText='width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:var(--white);border-radius:6px;padding:6px;font-size:11px;margin-bottom:6px;';
+  cont.appendChild(inp);
+};
+
+window.activarEstrategia=async function(objetivoId){
+  const o=(userProfile.objetivos||[]).find(x=>x.id===objetivoId);
+  const sugeridos=HABITOS_SUGERIDOS[o.area]||[];
+  const panel=document.getElementById('stratPanel-'+objetivoId);
+  const seleccionSug=[...panel.querySelectorAll('.strat-sug:checked')].map(c=>sugeridos[c.dataset.idx]);
+  const nombresCustom=[...panel.querySelectorAll('.strat-custom-inp')].map(i=>i.value.trim()).filter(v=>v);
+  if(!seleccionSug.length&&!nombresCustom.length){showToast('Elige al menos un hábito');return;}
+
+  const stratRef=await addDoc(collection(db,'users',currentUser.uid,'strategies'),{
+    objetivoId,area:o.area,habitosAsociados:[],
+    instrucciones:`Estrategia inicial para: ${o.descripcion}`,
+    estado:'activa',version:1,estrategiaAnteriorId:null,
+    origen:seleccionSug.length?'sistema':'usuario',
+    fechaCreacion:new Date().toISOString()
+  });
+
+  const nuevosIds=[];
+  for(const h of seleccionSug){
+    const habitData={name:h.nombre,cat:o.area,area:o.area,done:false,frecuencia:h.frecuencia||'diaria',dias:[],horario:h.horarioSugerido||null,recordatorioActivado:false,estado:'nuevo',esPersonalizado:false,objetivoId,estrategiaId:stratRef.id,rachaActual:0,rachaMaxima:0,diasCumplidos:0,diasProgramados:0,fechaConsolidacion:null,fechaCreacion:new Date().toISOString(),createdAt:new Date().toISOString()};
+    const ref=await addDoc(collection(db,'users',currentUser.uid,'habits'),habitData);
+    habits.push({id:ref.id,...habitData});
+    nuevosIds.push(ref.id);
+  }
+  for(const nombre of nombresCustom){
+    const habitData={name:nombre,cat:o.area,area:o.area,done:false,frecuencia:'diaria',dias:[],horario:null,recordatorioActivado:false,estado:'nuevo',esPersonalizado:true,objetivoId,estrategiaId:stratRef.id,rachaActual:0,rachaMaxima:0,diasCumplidos:0,diasProgramados:0,fechaConsolidacion:null,fechaCreacion:new Date().toISOString(),createdAt:new Date().toISOString()};
+    const ref=await addDoc(collection(db,'users',currentUser.uid,'habits'),habitData);
+    habits.push({id:ref.id,...habitData});
+    nuevosIds.push(ref.id);
+  }
+
+  await updateDoc(stratRef,{habitosAsociados:nuevosIds});
+  strategies.push({id:stratRef.id,objetivoId,area:o.area,habitosAsociados:nuevosIds,instrucciones:`Estrategia inicial para: ${o.descripcion}`,estado:'activa',version:1,estrategiaAnteriorId:null,origen:seleccionSug.length?'sistema':'usuario',fechaCreacion:new Date().toISOString()});
+
+  renderToday();
+  renderObjetivosList();
+  showToast('✓ ESTRATEGIA ACTIVADA');
+};
+
+function renderEstrategiaGestion(strat){
+  const habitosLigados=habits.filter(h=>h.estrategiaId===strat.id);
+  const rows=habitosLigados.map(h=>`<div style="display:flex;align-items:center;gap:8px;font-size:11px;margin-bottom:6px;"><span style="flex:1;">${h.name}</span><button onclick="quitarHabitoDeEstrategia('${strat.id}','${h.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;">×</button></div>`).join('')||'<div style="font-size:11px;color:var(--muted);">Sin hábitos activos en esta estrategia.</div>';
+  return `
+    <div style="font-size:10px;color:var(--accent);letter-spacing:.05em;margin-bottom:8px;">// HÁBITOS ACTIVOS (v${strat.version})</div>
+    ${rows}
+    <div style="font-size:10px;color:var(--accent);letter-spacing:.05em;margin:10px 0 6px;">// AGREGAR HÁBITO A LA ESTRATEGIA</div>
+    <input id="stratAdd-${strat.id}" placeholder="Nombre del hábito..." style="width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:var(--white);border-radius:6px;padding:6px;font-size:11px;margin-bottom:10px;"/>
+    <button class="btn-add" style="width:100%;" onclick="guardarCambiosEstrategia('${strat.id}')">GUARDAR CAMBIOS (crea v${strat.version+1})</button>`;
+}
+
+window.quitarHabitoDeEstrategia=async function(stratId,habitId){
+  const h=habits.find(x=>x.id===habitId);
+  if(h)h.estrategiaId=null;
+  await updateDoc(doc(db,'users',currentUser.uid,'habits',habitId),{estrategiaId:null});
+  renderObjetivosList();
+  document.getElementById('stratPanel-'+strategies.find(s=>s.id===stratId).objetivoId).style.display='none';
+  showToast('Hábito desligado de la estrategia');
+};
+
+window.guardarCambiosEstrategia=async function(oldStratId){
+  const old=strategies.find(s=>s.id===oldStratId);
+  const nuevoNombre=document.getElementById('stratAdd-'+oldStratId).value.trim();
+  let nuevosIds=habits.filter(h=>h.estrategiaId===oldStratId).map(h=>h.id);
+
+  await updateDoc(doc(db,'users',currentUser.uid,'strategies',oldStratId),{estado:'reemplazada'});
+  old.estado='reemplazada';
+
+  const newRef=await addDoc(collection(db,'users',currentUser.uid,'strategies'),{
+    objetivoId:old.objetivoId,area:old.area,habitosAsociados:[],
+    instrucciones:old.instrucciones,estado:'activa',version:old.version+1,
+    estrategiaAnteriorId:oldStratId,origen:'usuario',fechaCreacion:new Date().toISOString()
+  });
+
+  if(nuevoNombre){
+    const habitData={name:nuevoNombre,cat:old.area,area:old.area,done:false,frecuencia:'diaria',dias:[],horario:null,recordatorioActivado:false,estado:'nuevo',esPersonalizado:true,objetivoId:old.objetivoId,estrategiaId:newRef.id,rachaActual:0,rachaMaxima:0,diasCumplidos:0,diasProgramados:0,fechaConsolidacion:null,fechaCreacion:new Date().toISOString(),createdAt:new Date().toISOString()};
+    const ref=await addDoc(collection(db,'users',currentUser.uid,'habits'),habitData);
+    habits.push({id:ref.id,...habitData});
+    nuevosIds.push(ref.id);
+  }
+  // migrar los hábitos que ya estaban a la nueva versión de la estrategia
+  for(const hid of nuevosIds){
+    const h=habits.find(x=>x.id===hid);
+    if(h)h.estrategiaId=newRef.id;
+    await updateDoc(doc(db,'users',currentUser.uid,'habits',hid),{estrategiaId:newRef.id});
+  }
+  await updateDoc(newRef,{habitosAsociados:nuevosIds});
+  strategies.push({id:newRef.id,objetivoId:old.objetivoId,area:old.area,habitosAsociados:nuevosIds,instrucciones:old.instrucciones,estado:'activa',version:old.version+1,estrategiaAnteriorId:oldStratId,origen:'usuario',fechaCreacion:new Date().toISOString()});
+
+  renderToday();
+  renderObjetivosList();
+  showToast('✓ ESTRATEGIA ACTUALIZADA (v'+(old.version+1)+')');
+};
+
+window.addObjetivo=function(){
+  const area=document.getElementById('newObjArea').value;
+  const desc=document.getElementById('newObjDesc').value.trim();
+  if(!desc)return;
+  userProfile.objetivos=userProfile.objetivos||[];
+  userProfile.objetivos.push({
+    id:'obj_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),
+    area,descripcion:desc,estado:'activo',
+    fechaCreacion:new Date().toISOString()
+  });
+  document.getElementById('newObjDesc').value='';
+  renderObjetivosList();
+};
+
+window.toggleObjetivoEstado=function(id){
+  const o=(userProfile.objetivos||[]).find(x=>x.id===id);
+  if(o)o.estado=o.estado==='completado'?'activo':'completado';
+  renderObjetivosList();
+};
+
+window.removeObjetivo=function(id){
+  userProfile.objetivos=(userProfile.objetivos||[]).filter(o=>o.id!==id);
+  renderObjetivosList();
+};
+
+window.saveProfile=async function(){
+  userProfile.name=document.getElementById('pName').value||userProfile.name;
+  userProfile.age=document.getElementById('pAge').value;
+  userProfile.weight=document.getElementById('pWeight').value;
+  userProfile.height=document.getElementById('pHeight').value;
+  userProfile.occup=document.getElementById('pOccup').value;
+
+  // ── IDENTIDAD (Fase 1) ──
+  userProfile.estadoActual=document.getElementById('pEstadoActual').value.trim();
+  userProfile.vision=document.getElementById('pVision').value.trim();
+  userProfile.areas=[...document.querySelectorAll('#profAreas .int-chip.sel')].map(c=>c.textContent);
+
+  await updateDoc(doc(db,'users',currentUser.uid),userProfile);
+  document.getElementById('profAvatar').textContent=userProfile.name?userProfile.name[0].toUpperCase():'?';
+  document.getElementById('profName').textContent=userProfile.name||'Tu perfil';
+  document.getElementById('hdrName').textContent=userProfile.name.toUpperCase();
+  const btn=document.getElementById('saveProfileBtn');
+  btn.textContent='✓ GUARDADO';
+  setTimeout(()=>btn.textContent='GUARDAR PERFIL',2000);
+  showSaved();
+};
+
+// ── QUOTE OF THE DAY ──
+// ── FRASE DEL DÍA (banco fijo, sin IA — rota según el día del año) ──
+const QUOTES=[
+  'Cuando la señal es lo bastante fuerte y repetida, el cuerpo actúa antes de que la mente termine de decidir.',
+  'No cambias un hábito eliminándolo. Lo cambias entendiendo qué lo dispara y qué recompensa busca.',
+  'No necesitas cambiar todo a la vez. Necesitas encontrar el hábito que, cuando cae en su lugar, hace caer a los demás con él.',
+  'No combatas el hábito. Entiende qué recompensa busca y dásela por otro camino.',
+  'La disciplina real no es tener más voluntad. Es necesitar menos, porque ya automatizaste lo que otros todavía deciden cada día.',
+  'El que se conoce a sí mismo y conoce su terreno no teme el resultado de ninguna batalla.',
+  'No es cobardía evitar la batalla que no puedes ganar hoy. Es inteligencia reservar tus fuerzas para la que sí determina el resultado.',
+  'No hay estrategia universalmente correcta. Hay estrategias correctas para cada terreno.',
+  'El que gana primero planifica y luego actúa. El que pierde primero actúa y luego intenta ordenar el caos sobre la marcha.',
+  'La rigidez no es fortaleza. Es la primera grieta que cualquier adversidad va a encontrar y explotar.',
+  'Preparar el camino la noche anterior es más poderoso que la fuerza de voluntad la mañana siguiente.',
+  'La señal carga con el peso de la decisión.',
+  'No se trata de sentirte listo. Los hábitos que funcionan no esperan a que lleguen las ganas.',
+  'No naces con una línea base alta. La construyes, rep a rep.',
+  'El entorno no motivó con palabras. Elevó el estándar hasta que ese estándar se convirtió en la nueva normalidad.'
+];
+function loadQuote(){
+  const dayOfYear=Math.floor((Date.now()-new Date(new Date().getFullYear(),0,0))/86400000);
+  document.getElementById('quoteText').textContent=QUOTES[dayOfYear%QUOTES.length];
+}
+
+// ── STREAK CALCULATION ──
+async function calcStreak(){
+  try{
+    const snap=await getDocs(collection(db,'users',currentUser.uid,'days'));
+    allDaysData={};
+    snap.forEach(d=>{allDaysData[d.id]=d.data();});
+    const today=new Date();
+    let cur=0, best=0, tmp=0;
+    // check consecutive days backwards from yesterday
+    for(let i=1;i<=365;i++){
+      const d=new Date(today); d.setDate(d.getDate()-i);
+      const k=`${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+      const pct=allDaysData[k]?.pct||0;
+      if(pct>=50){tmp++;best=Math.max(best,tmp);}else{if(i===1)tmp=0;else break;}
+    }
+    cur=tmp;
+    // check if today already done
+    const todayPct=habits.length?Math.round((habits.filter(h=>h.done).length/habits.length)*100):0;
+    if(todayPct>=50)cur++;
+    best=Math.max(best,cur);
+    currentStreak=cur; bestStreak=best;
+    document.getElementById('streakCur').textContent=cur;
+    document.getElementById('streakBest').textContent=best;
+    const glowColor=cur===0?'var(--danger)':(cur<UMBRAL_CONSISTENTE?'var(--accent)':'var(--success)');
+    document.getElementById('streakBanner').style.setProperty('--glow-color',glowColor);
+    await calcHabitStreaks();
+  }catch(e){}
+}
+
+// ── RACHA Y ESTADO POR HÁBITO (Fase 2B) ──
+async function calcHabitStreaks(){
+  const today=new Date();
+  for(const h of habits){
+    let cur=0, best=0, tmp=0, cumplidos=0, dias=0;
+    for(let i=0;i<365;i++){
+      const d=new Date(today); d.setDate(d.getDate()-i);
+      const k=`${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+      const dayDoc=allDaysData[k];
+      if(!dayDoc&&i>0)break; // no hay más historial hacia atrás
+      const done=(dayDoc?.done||[]).includes(h.id);
+      if(i===0){ // hoy: usa el estado en memoria, no el guardado (puede no estar guardado aún)
+        if(h.done){tmp++;cumplidos++;dias++;}
+        else if(dayDoc)dias++;
+        continue;
+      }
+      if(!dayDoc)break;
+      dias++;
+      if(done){tmp++;cumplidos++;best=Math.max(best,tmp);}
+      else{tmp=0;}
+    }
+    cur=tmp; best=Math.max(best,cur);
+    h.rachaActual=cur;
+    h.rachaMaxima=Math.max(h.rachaMaxima||0,best);
+    h.diasCumplidos=cumplidos;
+    h.diasProgramados=dias;
+    // ── auto-transición de estado (nunca auto-asigna 'consolidado' — eso es evaluación, Fase 5) ──
+    if(h.estado!=='consolidado'&&h.estado!=='retirado'){
+      h.estado=cur>=UMBRAL_CONSISTENTE?'consistente':(cumplidos>0?'construccion':'nuevo');
+    }
+  }
+  renderToday();
+  // persistir los cambios calculados (no bloquea la UI)
+  habits.forEach(h=>{
+    updateDoc(doc(db,'users',currentUser.uid,'habits',h.id),{
+      rachaActual:h.rachaActual,rachaMaxima:h.rachaMaxima,
+      diasCumplidos:h.diasCumplidos,diasProgramados:h.diasProgramados,estado:h.estado
+    }).catch(()=>{});
+  });
+}
+
+// ── STATS RADAR ──
+window.renderStats=async function(){
+  const cats=['Salud','Mente','Productividad','Social'];
+  const catColors={'Salud':'#D4541A','Mente':'#534AB7','Productividad':'#1D9E75','Social':'#BA7517'};
+  const catScores={};
+  cats.forEach(c=>{
+    const ch=habits.filter(h=>h.cat===c);
+    catScores[c]=ch.length?Math.round((ch.filter(h=>h.done).length/ch.length)*100):0;
+  });
+
+  // Radar chart
+  const ctx=document.getElementById('radarChart').getContext('2d');
+  if(radarChart)radarChart.destroy();
+  radarChart=new Chart(ctx,{
+    type:'radar',
+    data:{
+      labels:['HEALTH','MIND','PRODUCTIVITY','SOCIAL'],
+      datasets:[{
+        data:cats.map(c=>catScores[c]),
+        backgroundColor:'rgba(212,84,26,0.15)',
+        borderColor:'#D4541A',
+        borderWidth:2,
+        pointBackgroundColor:'#D4541A',
+        pointRadius:4
+      }]
+    },
+    options:{
+      responsive:false,
+      plugins:{legend:{display:false}},
+      scales:{r:{
+        min:0,max:100,
+        ticks:{display:false,stepSize:25},
+        grid:{color:'rgba(255,255,255,0.1)'},
+        pointLabels:{font:{family:"'Inter',sans-serif",size:9,weight:600},color:'rgba(255,255,255,0.55)'}
+      }}
+    }
+  });
+
+  // Category cards
+  const grid=document.getElementById('statsCatGrid');
+  grid.innerHTML='';
+  cats.forEach(c=>{
+    const pct=catScores[c];
+    const col=catColors[c];
+    const card=document.createElement('div');
+    card.className='stat-cat-card';
+    card.innerHTML=`<div class="stat-cat-name">${c.toUpperCase()}</div>
+      <div class="stat-cat-val">${pct}%</div>
+      <div class="stat-cat-bar"><div class="stat-cat-fill" style="width:${pct}%;background:${col};"></div></div>`;
+    grid.appendChild(card);
+  });
+};
+
+// ── SUMMARY ──
+window.summaryPeriod=function(period,btn){
+  document.querySelectorAll('.summary-tab-btn').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.summary-period').forEach(p=>p.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('sum-'+period).classList.add('on');
+};
+
+window.renderSummary=async function(){
+  // Load all days data
+  try{
+    const snap=await getDocs(collection(db,'users',currentUser.uid,'days'));
+    allDaysData={};
+    snap.forEach(d=>{allDaysData[d.id]=d.data();});
+  }catch(e){}
+
+  const today=new Date();
+  const DAYS_EN=['SUN','MON','TUE','WED','THU','FRI','SAT'];
+  const WEEKS_EN=['W1','W2','W3','W4','W5'];
+
+  // ── WEEKLY ──
+  const weekDays=[];
+  for(let i=6;i>=0;i--){
+    const d=new Date(today); d.setDate(d.getDate()-i);
+    const k=`${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+    const isToday=i===0;
+    const pct=isToday?(habits.length?Math.round((habits.filter(h=>h.done).length/habits.length)*100):0):(allDaysData[k]?.pct||0);
+    weekDays.push({label:DAYS_EN[d.getDay()],pct,isToday});
+  }
+  const activeDaysW=weekDays.filter(d=>d.pct>0).length;
+  const avgW=activeDaysW?Math.round(weekDays.reduce((s,d)=>s+d.pct,0)/7):0;
+  let streakW=0; for(let i=weekDays.length-1;i>=0;i--){if(weekDays[i].pct>=50)streakW++;else break;}
+  document.getElementById('weekAvg').textContent=avgW+'%';
+  document.getElementById('weekDone').textContent=activeDaysW;
+  document.getElementById('weekStreak').textContent=streakW;
+
+  const wBar=document.getElementById('weekBarChart');
+  wBar.innerHTML='';
+  weekDays.forEach(d=>{
+    const col=d.pct>=80?'#4A6B2C':d.pct>=50?'#1D9E75':d.pct>=1?'#D4541A':'#E5DFC8';
+    const row=document.createElement('div');
+    row.className='bar-row';
+    row.innerHTML=`<div class="bar-day">${d.label}${d.isToday?' ◆':''}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${Math.max(d.pct,2)}%;background:${col};"><span class="bar-fill-text">${d.pct>8?d.pct+'%':''}</span></div></div>`;
+    wBar.appendChild(row);
+  });
+
+  // ── MONTHLY ──
+  const firstDay=new Date(today.getFullYear(),today.getMonth(),1);
+  const dim=new Date(today.getFullYear(),today.getMonth()+1,0).getDate();
+  const weekBuckets=[[],[],[],[],[]];
+  for(let d=1;d<=dim;d++){
+    const date=new Date(today.getFullYear(),today.getMonth(),d);
+    if(date>today)break;
+    const k=`${today.getFullYear()}-${today.getMonth()+1}-${d}`;
+    const isToday=d===today.getDate();
+    const pct=isToday?(habits.length?Math.round((habits.filter(h=>h.done).length/habits.length)*100):0):(allDaysData[k]?.pct||0);
+    const wk=Math.floor((d-1)/7);
+    if(wk<5)weekBuckets[wk].push(pct);
+  }
+  const weekAvgs=weekBuckets.map(w=>w.length?Math.round(w.reduce((a,b)=>a+b,0)/w.length):null);
+  const validWeeks=weekAvgs.filter(w=>w!==null);
+  const avgM=validWeeks.length?Math.round(validWeeks.reduce((a,b)=>a+b,0)/validWeeks.length):0;
+  const allPcts=Object.values(allDaysData).filter(d=>{
+    const parts=Object.keys(allDaysData).find(k=>allDaysData[k]===d);
+    return true;
+  }).map(d=>d.pct||0);
+  const activeDaysM=Object.keys(allDaysData).filter(k=>{
+    const[y,m]=k.split('-').map(Number);
+    return y===today.getFullYear()&&m===today.getMonth()+1&&(allDaysData[k].pct||0)>0;
+  }).length;
+  const allMonthPcts=[];
+  for(let d=1;d<=dim;d++){
+    const k=`${today.getFullYear()}-${today.getMonth()+1}-${d}`;
+    if(allDaysData[k])allMonthPcts.push(allDaysData[k].pct||0);
+  }
+  const bestM=allMonthPcts.length?Math.max(...allMonthPcts):0;
+  document.getElementById('monthAvg').textContent=avgM+'%';
+  document.getElementById('monthDays').textContent=activeDaysM;
+  document.getElementById('monthBest').textContent=bestM+'%';
+
+  const mBar=document.getElementById('monthBarChart');
+  mBar.innerHTML='';
+  weekAvgs.forEach((avg,i)=>{
+    if(avg===null)return;
+    const col=avg>=80?'#4A6B2C':avg>=50?'#1D9E75':avg>=1?'#D4541A':'#E5DFC8';
+    const row=document.createElement('div');
+    row.className='bar-row';
+    row.innerHTML=`<div class="bar-day">${WEEKS_EN[i]}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${Math.max(avg,2)}%;background:${col};"><span class="bar-fill-text">${avg>8?avg+'%':''}</span></div></div>`;
+    mBar.appendChild(row);
+  });
+};
+
+// ── NAV ──
+window.switchTab=function(id,btn){
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('tab-'+id).classList.add('on');
+  if(id==='history')renderCalendar();
+  if(id==='stats')renderStats();
+  if(id==='summary')renderSummary();
+};
+</script>
+</body>
+</html>
