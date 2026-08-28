@@ -579,7 +579,10 @@ input[type="number"]::-webkit-inner-spin-button{-webkit-appearance:none;}
 <!-- MODAL: Ajustes / Datos personales -->
 <div class="sb-modal" id="settingsModal">
   <div class="sb-modal-card">
-    <div class="sb-modal-tag">// AJUSTES</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <div class="sb-modal-tag" style="margin-bottom:0;">// AJUSTES</div>
+      <button onclick="toggleSettings()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1;padding:0 4px;">×</button>
+    </div>
     <div class="sb-modal-title">Datos personales</div>
     <div class="profile-row">
       <div><label class="pf-label">NOMBRE</label><input class="pf-inp" id="pName" type="text" placeholder="Tu nombre"/></div>
@@ -1460,6 +1463,7 @@ window.saveProfile=async function(){
 
   await updateDoc(doc(db,'users',currentUser.uid),userProfile);
   document.getElementById('hdrName').textContent=userProfile.name.toUpperCase();
+  document.getElementById('settingsModal').classList.remove('on');
   showToast('✓ PERFIL GUARDADO');
 };
 
