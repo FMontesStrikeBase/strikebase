@@ -327,6 +327,15 @@ input[type="number"]::-webkit-inner-spin-button{-webkit-appearance:none;}
   </div>
 </div>
 
+<!-- MODAL: Bienvenida de vuelta tras inactividad larga -->
+<div class="sb-modal" id="welcomeBackModal">
+  <div class="sb-modal-card">
+    <div class="sb-modal-tag">// DE VUELTA</div>
+    <div class="sb-modal-title">Bienvenido de vuelta</div>
+    <div id="welcomeBackBody"></div>
+  </div>
+</div>
+
 <!-- ONBOARDING -->
 <div id="ob">
   <div class="ob-step active" id="s0">
@@ -596,6 +605,11 @@ input[type="number"]::-webkit-inner-spin-button{-webkit-appearance:none;}
       <select class="pf-inp" id="pOccup"><option value="">Seleccionar...</option><option>Estudiante</option><option>Militar / Seguridad</option><option>Profesional independiente</option><option>Empleado corporativo</option><option>Emprendedor</option><option>Deportista</option><option>Docente</option><option>Artista / Creativo</option><option>Otro</option></select>
     </div>
     <button class="save-btn" id="saveProfileBtn" onclick="saveProfile()">GUARDAR</button>
+    <div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06);">
+      <div class="pf-label" style="margin-bottom:8px;">RECORDATORIOS</div>
+      <button class="btn-add" id="notifBtn" style="width:100%;" onclick="activarNotificaciones()">ACTIVAR NOTIFICACIONES PUSH</button>
+      <div style="font-size:10px;color:var(--muted);margin-top:8px;line-height:1.5;">Envían recordatorios según el horario que configures en cada hábito. Actívalas una sola vez por dispositivo.</div>
+    </div>
   </div>
 </div>
 
@@ -654,6 +668,7 @@ if(sbIsIOS&&!sbIsStandalone)setTimeout(showInstallBannerIfNeeded,1500);
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, getDocs, deleteDoc, query, where } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getMessaging, getToken, onMessage, isSupported } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyA_Io6E_Q5-dOrtSSZPlb8DWbHgsWgaGPw",
@@ -668,6 +683,35 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 const auth = getAuth(firebaseApp);
 const db = getFirestore(firebaseApp);
+
+// ── FASE 2 PWA: NOTIFICACIONES PUSH ──
+const VAPID_KEY = 'BFVDhtpU9PEz8_IVridY9z2PDegqGozpbYGwzs6jW9s2PeNXsac_8DLKFonMOV1WAUjzd6Erknn-DLzZvBkXtxo';
+let messaging = null;
+
+window.activarNotificaciones=async function(){
+  const btn=document.getElementById('notifBtn');
+  try{
+    const soportado=await isSupported();
+    if(!soportado){showToast('Este navegador no soporta notificaciones push');return;}
+    const permiso=await Notification.requestPermission();
+    if(permiso!=='granted'){showToast('Permiso de notificaciones no concedido');return;}
+    messaging=getMessaging(firebaseApp);
+    const registration=await navigator.serviceWorker.ready;
+    const token=await getToken(messaging,{vapidKey:VAPID_KEY,serviceWorkerRegistration:registration});
+    if(!token){showToast('No se pudo generar el token de notificaciones');return;}
+    await updateDoc(doc(db,'users',currentUser.uid),{fcmToken:token,fcmTokenActualizado:new Date().toISOString()});
+    userProfile.fcmToken=token;
+    if(btn){btn.textContent='✓ NOTIFICACIONES ACTIVADAS';btn.disabled=true;}
+    showToast('✓ NOTIFICACIONES ACTIVADAS');
+    // Notificación en primer plano (si la app está abierta cuando llega el mensaje)
+    onMessage(messaging,(payload)=>{
+      showToast(payload.notification?.title||'Recordatorio de hábito');
+    });
+  }catch(e){
+    console.error(e);
+    showToast('No se pudo activar — revisa los permisos del navegador');
+  }
+};
 
 // ── CONSTANTS ──
 const MONTHS=['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
@@ -924,56 +968,96 @@ function estaProgramado(h,date){
   return (h.dias||[]).includes(DAY_ABBR[date.getDay()]);
 }
 
-async function revisarInconsistenciasAyer(){
+async function revisarDiasPendientes(){
   const ayer=new Date(); ayer.setDate(ayer.getDate()-1);
-  const ayerKey=dayKeyOf(ayer);
-  const ayerSnap=await getDoc(doc(db,'users',currentUser.uid,'days',ayerKey));
-  const doneAyer=ayerSnap.exists()?(ayerSnap.data().done||[]):[]; // sin registro = nada cumplido, no "nada que revisar"
-  const yaRegistradas=new Set(inconsistencies.filter(i=>i.fecha===ayerKey).map(i=>i.habitId));
+  let desde;
+  if(userProfile.ultimaRevisionInconsistencias){
+    desde=new Date(userProfile.ultimaRevisionInconsistencias);
+    desde.setDate(desde.getDate()+1);
+  } else {
+    desde=new Date(ayer); // primera vez que corre esto: solo revisa ayer, como antes
+  }
+  if(desde>ayer)return; // ya está al día, nada pendiente
 
-  const pendientes=habits.filter(h=>{
-    if(doneAyer.includes(h.id))return false; // se cumplió, no es inconsistencia
-    if(yaRegistradas.has(h.id))return false; // ya se preguntó el motivo
-    if(!estaProgramado(h,ayer))return false; // no tocaba ese día
-    if(h.fechaCreacion&&new Date(h.fechaCreacion)>ayer)return false; // el hábito no existía todavía
-    if(h.estado==='retirado')return false;
-    return true;
-  });
+  const gapDias=Math.round((ayer-desde)/86400000)+1;
+  const LIMITE_GAP=10; // más de esto, no vale la pena reconstruir día por día
 
-  if(pendientes.length)mostrarModalInconsistencias(pendientes,ayerKey);
+  if(gapDias>LIMITE_GAP){
+    mostrarModalBienvenidaDeVuelta(gapDias);
+    await marcarRevisadoHasta(ayer);
+    return;
+  }
+
+  const pendientes=[];
+  for(let d=new Date(desde); d<=ayer; d.setDate(d.getDate()+1)){
+    const fechaKey=dayKeyOf(d);
+    const daySnap=await getDoc(doc(db,'users',currentUser.uid,'days',fechaKey));
+    const doneEseDia=daySnap.exists()?(daySnap.data().done||[]):[];
+    const yaRegistradas=new Set(inconsistencies.filter(i=>i.fecha===fechaKey).map(i=>i.habitId));
+    const fechaLabel=d.toLocaleDateString('es-PE',{day:'numeric',month:'short'});
+    habits.forEach(h=>{
+      if(doneEseDia.includes(h.id))return;
+      if(yaRegistradas.has(h.id))return;
+      if(!estaProgramado(h,d))return;
+      if(h.fechaCreacion&&new Date(h.fechaCreacion)>d)return;
+      if(h.estado==='retirado')return;
+      pendientes.push({habitId:h.id,habitName:h.name,fecha:fechaKey,fechaLabel});
+    });
+  }
+
+  if(pendientes.length)mostrarModalInconsistencias(pendientes);
+  else await marcarRevisadoHasta(ayer);
 }
 
-function mostrarModalInconsistencias(pendientes,fecha){
+async function marcarRevisadoHasta(fecha){
+  const key=dayKeyOf(fecha);
+  userProfile.ultimaRevisionInconsistencias=key;
+  await updateDoc(doc(db,'users',currentUser.uid),{ultimaRevisionInconsistencias:key});
+}
+
+function mostrarModalBienvenidaDeVuelta(gapDias){
+  const modal=document.getElementById('welcomeBackModal');
+  document.getElementById('welcomeBackBody').innerHTML=`
+    <div style="font-size:13px;line-height:1.6;color:var(--sand-light);margin-bottom:16px;">
+      Pasaron ${gapDias} días desde tu última visita. En vez de repasar cada día uno por uno, seguimos desde hoy — lo que importa es retomar, no reconstruir el pasado.
+    </div>
+    <button class="btn-add" style="width:100%;" onclick="document.getElementById('welcomeBackModal').classList.remove('on')">RETOMAR HOY</button>`;
+  modal.classList.add('on');
+}
+
+function mostrarModalInconsistencias(pendientes){
   const modal=document.getElementById('incModal');
   const body=document.getElementById('incModalBody');
-  body.innerHTML=`<div style="font-size:12px;color:var(--muted);margin-bottom:14px;">Ayer no marcaste estos hábitos. Cuéntanos qué pasó — nos ayuda a mejorar el sistema, no es un examen.</div>` +
-    pendientes.map(h=>`
+  const esMultiDia=new Set(pendientes.map(p=>p.fecha)).size>1;
+  body.innerHTML=`<div style="font-size:12px;color:var(--muted);margin-bottom:14px;">${esMultiDia?'Estuviste unos días sin registrar. Cuéntanos qué pasó — nos ayuda a mejorar el sistema, no es un examen.':'Ayer no marcaste estos hábitos. Cuéntanos qué pasó.'}</div>` +
+    pendientes.map((p,idx)=>`
       <div style="margin-bottom:14px;">
-        <div style="font-size:12px;font-weight:600;margin-bottom:6px;">${h.name}</div>
-        <select id="incMotivo-${h.id}" style="width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:var(--white);border-radius:6px;padding:6px;font-size:11px;margin-bottom:6px;">
+        <div style="font-size:12px;font-weight:600;margin-bottom:6px;">${p.habitName}${esMultiDia?` <span style="color:var(--muted);font-weight:400;">· ${p.fechaLabel}</span>`:''}</div>
+        <select id="incMotivo-${idx}" style="width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:var(--white);border-radius:6px;padding:6px;font-size:11px;margin-bottom:6px;">
           ${MOTIVOS.map(m=>`<option value="${m.v}">${m.l}</option>`).join('')}
         </select>
       </div>`).join('');
-  modal.dataset.fecha=fecha;
-  modal.dataset.habitIds=JSON.stringify(pendientes.map(h=>h.id));
+  modal.dataset.pendientes=JSON.stringify(pendientes);
   modal.classList.add('on');
 }
 
 window.guardarInconsistencias=async function(){
   const modal=document.getElementById('incModal');
-  const fecha=modal.dataset.fecha;
-  const habitIds=JSON.parse(modal.dataset.habitIds);
-  const afectados=[];
-  for(const hid of habitIds){
-    const motivo=document.getElementById('incMotivo-'+hid).value;
+  const pendientes=JSON.parse(modal.dataset.pendientes);
+  const afectados=new Set();
+  for(let idx=0;idx<pendientes.length;idx++){
+    const p=pendientes[idx];
+    const motivo=document.getElementById('incMotivo-'+idx).value;
     const ref=await addDoc(collection(db,'users',currentUser.uid,'inconsistencies'),{
-      habitId:hid,fecha,motivo,motivoDetalle:null,tipo:null,fechaCreacion:new Date().toISOString()
+      habitId:p.habitId,fecha:p.fecha,motivo,motivoDetalle:null,tipo:null,fechaCreacion:new Date().toISOString()
     });
-    inconsistencies.push({id:ref.id,habitId:hid,fecha,motivo,motivoDetalle:null,tipo:null,fechaCreacion:new Date().toISOString()});
-    afectados.push(hid);
+    inconsistencies.push({id:ref.id,habitId:p.habitId,fecha:p.fecha,motivo,motivoDetalle:null,tipo:null,fechaCreacion:new Date().toISOString()});
+    afectados.add(p.habitId);
   }
   modal.classList.remove('on');
   showToast('✓ REGISTRADO');
+  const ayer=new Date(); ayer.setDate(ayer.getDate()-1);
+  await marcarRevisadoHasta(ayer);
   for(const hid of afectados)await revisarPatron(hid);
 };
 
@@ -1060,7 +1144,7 @@ function showApp(){
   setBriefing();
   loadQuote();
   calcStreak();
-  revisarInconsistenciasAyer();
+  revisarDiasPendientes();
 }
 
 // ── TODAY ──
@@ -1247,6 +1331,10 @@ function syncProfileUI(){
   if(userProfile.weight)document.getElementById('pWeight').value=userProfile.weight;
   if(userProfile.height)document.getElementById('pHeight').value=userProfile.height;
   if(userProfile.occup)document.getElementById('pOccup').value=userProfile.occup;
+  if(userProfile.fcmToken){
+    const nb=document.getElementById('notifBtn');
+    if(nb){nb.textContent='✓ NOTIFICACIONES ACTIVADAS';nb.disabled=true;}
+  }
 
   // ── IDENTIDAD (Fase 1) ──
   document.getElementById('pEstadoActual').value=userProfile.estadoActual||'';
