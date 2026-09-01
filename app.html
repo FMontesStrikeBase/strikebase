@@ -667,7 +667,7 @@ if(sbIsIOS&&!sbIsStandalone)setTimeout(showInstallBannerIfNeeded,1500);
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, getDocs, deleteDoc, query, where } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, getDocs, deleteDoc, query, where, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 import { getMessaging, getToken, onMessage, isSupported } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js';
 
 const firebaseConfig = {
@@ -699,9 +699,10 @@ window.activarNotificaciones=async function(){
     const registration=await navigator.serviceWorker.ready;
     const token=await getToken(messaging,{vapidKey:VAPID_KEY,serviceWorkerRegistration:registration});
     if(!token){showToast('No se pudo generar el token de notificaciones');return;}
-    await updateDoc(doc(db,'users',currentUser.uid),{fcmToken:token,fcmTokenActualizado:new Date().toISOString()});
-    userProfile.fcmToken=token;
+    await updateDoc(doc(db,'users',currentUser.uid),{fcmTokens:arrayUnion(token),fcmTokenActualizado:new Date().toISOString()});
+    userProfile.fcmTokens=[...(userProfile.fcmTokens||[]),token];
     if(btn){btn.textContent='✓ NOTIFICACIONES ACTIVADAS';btn.disabled=true;}
+    localStorage.setItem('sb_notif_activado','1');
     showToast('✓ NOTIFICACIONES ACTIVADAS');
     // Notificación en primer plano (si la app está abierta cuando llega el mensaje)
     onMessage(messaging,(payload)=>{
@@ -1331,9 +1332,9 @@ function syncProfileUI(){
   if(userProfile.weight)document.getElementById('pWeight').value=userProfile.weight;
   if(userProfile.height)document.getElementById('pHeight').value=userProfile.height;
   if(userProfile.occup)document.getElementById('pOccup').value=userProfile.occup;
-  if(userProfile.fcmToken){
+  if(localStorage.getItem('sb_notif_activado')==='1'){
     const nb=document.getElementById('notifBtn');
-    if(nb){nb.textContent='✓ NOTIFICACIONES ACTIVADAS';nb.disabled=true;}
+    if(nb){nb.textContent='✓ NOTIFICACIONES ACTIVADAS EN ESTE DISPOSITIVO';nb.disabled=true;}
   }
 
   // ── IDENTIDAD (Fase 1) ──
