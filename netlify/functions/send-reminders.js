@@ -70,6 +70,16 @@ const handler = async function () {
     const dentroDeVentana = minutosHabito <= minutosAhora && minutosHabito > minutosAhora - 15;
     if (!dentroDeVentana) continue;
 
+    // ── Reclamo atómico: evita duplicados si esta función corre 2 veces casi al mismo tiempo ──
+    // (las funciones programadas en la nube garantizan "al menos una vez", no "exactamente una vez")
+    const yaReclamado = await db.runTransaction(async (tx) => {
+      const fresco = await tx.get(habitDoc.ref);
+      if (fresco.data()?.ultimoRecordatorioEnviado === hoyKey) return true; // otra ejecución ya lo tomó
+      tx.update(habitDoc.ref, { ultimoRecordatorioEnviado: hoyKey });
+      return false;
+    });
+    if (yaReclamado) continue;
+
     // El documento del hábito vive en users/{uid}/habits/{habitId}
     const userRef = habitDoc.ref.parent.parent;
     const userSnap = await userRef.get();
@@ -105,7 +115,6 @@ const handler = async function () {
     }
 
     if (enviadoAlMenosUnaVez) {
-      await habitDoc.ref.update({ ultimoRecordatorioEnviado: hoyKey });
       enviados++;
     }
   }
