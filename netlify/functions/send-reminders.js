@@ -73,23 +73,40 @@ const handler = async function () {
     // El documento del hábito vive en users/{uid}/habits/{habitId}
     const userRef = habitDoc.ref.parent.parent;
     const userSnap = await userRef.get();
-    const fcmToken = userSnap.data()?.fcmToken;
-    if (!fcmToken) continue;
+    const fcmTokens = userSnap.data()?.fcmTokens || [];
+    if (!fcmTokens.length) continue;
 
-    try {
-      await messaging.send({
-        token: fcmToken,
-        notification: {
-          title: 'StrikeBase',
-          body: `Es hora de: ${habit.name}`,
-        },
-        data: { habitId: habitDoc.id },
-      });
+    let enviadoAlMenosUnaVez = false;
+    const tokensInvalidos = [];
+
+    for (const token of fcmTokens) {
+      try {
+        await messaging.send({
+          token,
+          notification: {
+            title: 'StrikeBase',
+            body: `Es hora de: ${habit.name}`,
+          },
+          data: { habitId: habitDoc.id },
+        });
+        enviadoAlMenosUnaVez = true;
+      } catch (err) {
+        // Token inválido/expirado (dispositivo desinstaló la app, etc.) — se limpia más abajo
+        console.error(`Error enviando a un token de ${habitDoc.id}:`, err.message);
+        if (err.code === 'messaging/registration-token-not-registered') {
+          tokensInvalidos.push(token);
+        }
+      }
+    }
+
+    if (tokensInvalidos.length) {
+      const tokensLimpios = fcmTokens.filter((t) => !tokensInvalidos.includes(t));
+      await userRef.update({ fcmTokens: tokensLimpios });
+    }
+
+    if (enviadoAlMenosUnaVez) {
       await habitDoc.ref.update({ ultimoRecordatorioEnviado: hoyKey });
       enviados++;
-    } catch (err) {
-      // Token inválido o expirado — no detiene el resto del batch
-      console.error(`Error enviando a ${habitDoc.id}:`, err.message);
     }
   }
 
