@@ -1,5 +1,9 @@
 [build]
   functions = "netlify/functions"
+
+[functions]
+  external_node_modules = ["firebase-admin", "@netlify/functions"]
+
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
