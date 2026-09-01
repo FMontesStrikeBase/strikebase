@@ -9,16 +9,19 @@
 // con el contenido completo del JSON de la cuenta de servicio de Firebase.
 
 const { schedule } = require('@netlify/functions');
-const admin = require('firebase-admin');
+const { initializeApp, cert, getApps } = require('firebase-admin/app');
+const { getFirestore } = require('firebase-admin/firestore');
+const { getMessaging } = require('firebase-admin/messaging');
 
-if (!admin.apps.length) {
+if (!getApps().length) {
   const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
+  initializeApp({
+    credential: cert(serviceAccount),
   });
 }
 
-const db = admin.firestore();
+const db = getFirestore();
+const messaging = getMessaging();
 
 const DAY_ABBR = ['dom', 'lun', 'mar', 'mie', 'jue', 'vie', 'sab']; // igual que en app.html
 
@@ -74,7 +77,7 @@ const handler = async function () {
     if (!fcmToken) continue;
 
     try {
-      await admin.messaging().send({
+      await messaging.send({
         token: fcmToken,
         notification: {
           title: 'StrikeBase',
